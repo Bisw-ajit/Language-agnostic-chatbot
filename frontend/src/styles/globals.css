@@ -1,0 +1,27 @@
+:root {
+  --ink-indigo: #1F2B4D;
+  --turmeric-gold: #D9A62E;
+  --mist-paper: #EFF1EC;
+  --banyan-green: #2F5D50;
+  --slate-line: #8A8F98;
+  --alert-rust: #B5482E;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--mist-paper); font-family: 'Inter', sans-serif; color: var(--ink-indigo); }
+
+/* Common UI */
+button {
+  cursor: pointer;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+input, textarea {
+  font-family: 'Inter', sans-serif;
+  color: var(--ink-indigo);
+}
+
+a {
+  color: var(--ink-indigo);
+  text-decoration: none;
+}

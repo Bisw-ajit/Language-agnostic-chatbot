@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: chatbot_db
+      POSTGRES_USER: chatbot
+      POSTGRES_PASSWORD: chatbot123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - POSTGRES_URL=postgresql://chatbot:chatbot123@db:5432/chatbot_db
+    depends_on:
+      - db
+    volumes:
+      - ./backend/chroma_data:/workspace/backend/chroma_data
+      - ./backend/uploads:/workspace/backend/uploads
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
