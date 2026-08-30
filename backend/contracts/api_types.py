@@ -20,14 +20,26 @@ class RegisterRequest(BaseModel):
 class Source(BaseModel):
     document_id: str
     source: str
+    document_title: Optional[str] = None
+    title: Optional[str] = None
     page: int
+    section: Optional[str] = "General"
     department: str
+    category: Optional[str] = "Scheme"
     language: str
+    version: Optional[str] = "1.0"
+    source_type: Optional[str] = "official"
+    authority_level: Optional[str] = "official"
+    source_url: Optional[str] = None
+    publication_date: Optional[str] = None
+    last_updated: Optional[str] = None
     excerpt: str
+    score: Optional[float] = 0.0
 
 class ChatRequest(BaseModel):
     conversation_id: Optional[str] = None
     message: str
+    preferred_language: Optional[str] = None
 
 class ChatResponse(BaseModel):
     conversation_id: str
@@ -36,8 +48,12 @@ class ChatResponse(BaseModel):
     sources: List[Source]
     detected_language: str
     language_display: str
+    script: Optional[str] = "latin"
     confidence: float
+    evidence_level: Optional[str] = "HIGH"
+    conflicts: Optional[List[str]] = None
     is_fallback: bool
+    rewritten_query: Optional[str] = None
 
 class FeedbackRequest(BaseModel):
     message_id: str
@@ -46,13 +62,18 @@ class FeedbackRequest(BaseModel):
 
 class DocumentMetadataResponse(BaseModel):
     id: str
+    title: Optional[str] = None
     filename: str
     department: str
+    category: Optional[str] = "Scheme"
     language: str
     version: str
+    source_type: Optional[str] = "official"
+    authority_level: Optional[str] = "official"
+    source_url: Optional[str] = None
+    checksum: Optional[str] = None
     status: str
     uploaded_at: datetime
-    uploaded_by: str
 
 class DocumentStatusResponse(BaseModel):
     id: str

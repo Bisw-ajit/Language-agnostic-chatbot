@@ -4,9 +4,9 @@ from sqlalchemy import Column, String, DateTime, Text, Float, Boolean, Integer, 
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from passlib.context import CryptContext
 from backend.config import get_settings
-
 settings = get_settings()
-engine = create_engine(settings.postgres_url)
+connect_args = {"check_same_thread": False} if settings.postgres_url.startswith("sqlite") else {}
+engine = create_engine(settings.postgres_url, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -67,13 +67,25 @@ class Feedback(Base):
 class DocumentMetadata(Base):
     __tablename__ = "document_metadata"
     id = Column(String, primary_key=True, default=generate_uuid)
+    title = Column(String, nullable=False, default="Untitled Document")
+    description = Column(Text, nullable=True)
     filename = Column(String, nullable=False)
     department = Column(String, nullable=False)
-    language = Column(String, nullable=False)
-    version = Column(String, nullable=False)
-    status = Column(String, default="pending", nullable=False)
+    category = Column(String, default="Scheme", nullable=False)
+    language = Column(String, default="en", nullable=False)
+    source_type = Column(String, default="official", nullable=False)  # "official", "user_upload", "demo", "seed", "unknown"
+    authority_level = Column(String, default="official", nullable=False)  # "official", "trusted", "user_uploaded", "demo", "unknown"
+    source_url = Column(String, nullable=True)
+    publisher = Column(String, nullable=True)
+    publication_date = Column(String, nullable=True)
+    last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    version = Column(String, default="1.0", nullable=False)
+    status = Column(String, default="pending", nullable=False)  # "pending", "processing", "active", "archived", "rejected", "failed"
+    checksum = Column(String, index=True, nullable=True)
     uploaded_by = Column(String, ForeignKey("users.id"), nullable=False)
     uploaded_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class AnalyticsDaily(Base):
     __tablename__ = "analytics_daily"

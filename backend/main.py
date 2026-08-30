@@ -15,10 +15,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from backend.rag.vector_store import sync_bm25_from_chroma
+
 @app.on_event("startup")
 def on_startup():
     create_tables()
     seed_demo_users()
+    sync_bm25_from_chroma()
 
 app.include_router(auth_router)
 app.include_router(chat_router)

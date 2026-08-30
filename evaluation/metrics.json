@@ -1,0 +1,226 @@
+{
+  "language_detection": {
+    "total_samples": 100,
+    "correct": 94,
+    "accuracy": 0.94,
+    "avg_latency_ms": 0.038,
+    "confusion_matrix": {
+      "en": {
+        "en": 23,
+        "hi-en": 2
+      },
+      "hi": {
+        "hi": 25
+      },
+      "hi-en": {
+        "hi-en": 21,
+        "en": 4
+      },
+      "or": {
+        "or": 25
+      }
+    }
+  },
+  "retrieval_strategies": {
+    "Vector only": {
+      "Recall@1": 0.6543,
+      "Recall@3": 0.8148,
+      "Recall@5": 0.8519,
+      "Recall@10": 0.9259,
+      "MRR": 0.7423,
+      "avg_latency_ms": 0.231
+    },
+    "BM25 only": {
+      "Recall@1": 0.7778,
+      "Recall@3": 0.8889,
+      "Recall@5": 0.9383,
+      "Recall@10": 0.9753,
+      "MRR": 0.8415,
+      "avg_latency_ms": 0.185
+    },
+    "Vector + BM25": {
+      "Recall@1": 0.7901,
+      "Recall@3": 0.9012,
+      "Recall@5": 0.9506,
+      "Recall@10": 0.9877,
+      "MRR": 0.8582,
+      "avg_latency_ms": 0.384
+    },
+    "Vector + BM25 + RRF": {
+      "Recall@1": 0.8272,
+      "Recall@3": 0.9259,
+      "Recall@5": 0.9753,
+      "Recall@10": 1.0,
+      "MRR": 0.8894,
+      "avg_latency_ms": 0.442
+    },
+    "Vector + BM25 + RRF + Reranker": {
+      "Recall@1": 0.8519,
+      "Recall@3": 0.9506,
+      "Recall@5": 0.9877,
+      "Recall@10": 1.0,
+      "MRR": 0.9126,
+      "avg_latency_ms": 0.589
+    }
+  },
+  "reranker_ablation": {
+    "reranker_enabled": {
+      "Recall@1": 0.8519,
+      "Recall@3": 0.9506,
+      "Recall@5": 0.9877,
+      "Recall@10": 1.0,
+      "MRR": 0.9126,
+      "avg_latency_ms": 0.589
+    },
+    "reranker_disabled": {
+      "Recall@1": 0.8272,
+      "Recall@3": 0.9259,
+      "Recall@5": 0.9753,
+      "Recall@10": 1.0,
+      "MRR": 0.8894,
+      "avg_latency_ms": 0.442
+    },
+    "delta_mrr": 0.0232,
+    "delta_recall5": 0.0124,
+    "delta_latency_ms": 0.147
+  },
+  "retrieval_by_language": {
+    "en": {
+      "samples": 21,
+      "Recall@5": 1.0,
+      "Recall@10": 1.0,
+      "MRR": 0.9524
+    },
+    "hi": {
+      "samples": 20,
+      "Recall@5": 1.0,
+      "Recall@10": 1.0,
+      "MRR": 0.9333
+    },
+    "hi-en": {
+      "samples": 20,
+      "Recall@5": 0.95,
+      "Recall@10": 1.0,
+      "MRR": 0.8875
+    },
+    "or": {
+      "samples": 20,
+      "Recall@5": 1.0,
+      "Recall@10": 1.0,
+      "MRR": 0.875
+    }
+  },
+  "cross_language_equivalence": {
+    "groups_tested": 10,
+    "mean_document_overlap_iou": 1.0,
+    "mean_section_overlap_iou": 0.8667,
+    "group_details": {
+      "kalia_amount": {
+        "questions_count": 4,
+        "doc_iou": 1.0,
+        "section_iou": 1.0
+      },
+      "kalia_eligibility": {
+        "questions_count": 4,
+        "doc_iou": 1.0,
+        "section_iou": 1.0
+      },
+      "kalia_docs": {
+        "questions_count": 4,
+        "doc_iou": 1.0,
+        "section_iou": 1.0
+      },
+      "kalia_apply": {
+        "questions_count": 4,
+        "doc_iou": 1.0,
+        "section_iou": 1.0
+      },
+      "kalia_landless": {
+        "questions_count": 4,
+        "doc_iou": 1.0,
+        "section_iou": 1.0
+      },
+      "bsky_coverage": {
+        "questions_count": 4,
+        "doc_iou": 1.0,
+        "section_iou": 1.0
+      },
+      "bsky_eligibility": {
+        "questions_count": 4,
+        "doc_iou": 1.0,
+        "section_iou": 0.75
+      },
+      "bsky_docs": {
+        "questions_count": 4,
+        "doc_iou": 1.0,
+        "section_iou": 1.0
+      },
+      "mbpy_amount": {
+        "questions_count": 4,
+        "doc_iou": 1.0,
+        "section_iou": 1.0
+      },
+      "mbpy_age": {
+        "questions_count": 4,
+        "doc_iou": 1.0,
+        "section_iou": 0.8
+      }
+    }
+  },
+  "adversarial_hinglish": {
+    "total_adversarial_cases": 24,
+    "passed": 23,
+    "accuracy": 0.9583
+  },
+  "evidence_validation": {
+    "high_level_test": {
+      "expected": "HIGH",
+      "actual": "HIGH",
+      "passed": true
+    },
+    "medium_level_test": {
+      "expected": "MEDIUM",
+      "actual": "MEDIUM",
+      "passed": true
+    },
+    "insufficient_level_test": {
+      "expected": "INSUFFICIENT",
+      "actual": "INSUFFICIENT",
+      "passed": true
+    },
+    "intent_coverage_test": {
+      "documents_intent_detected_missing": true,
+      "passed": true
+    },
+    "contradiction_test": {
+      "has_conflict": true,
+      "passed": true
+    }
+  },
+  "versioning_and_deduplication": {
+    "version_isolation_passed": true,
+    "duplicate_detection_passed": true,
+    "single_byte_mutation_passed": true
+  },
+  "integrity_and_hallucination": {
+    "out_of_domain_samples": 19,
+    "hallucination_fallbacks_triggered": 19,
+    "hallucination_defense_rate": 1.0,
+    "citation_metadata_integrity_passed": true
+  },
+  "performance_and_latency": {
+    "latency_breakdown": {
+      "query_processing_ms": 0.32,
+      "vector_retrieval_ms": 0.22,
+      "bm25_retrieval_ms": 0.19,
+      "rrf_fusion_ms": 0.08,
+      "reranking_ms": 0.15,
+      "evidence_validation_ms": 0.11,
+      "total_end_to_end_ms": 1.18
+    },
+    "failure_resilience": {
+      "empty_query_handled_gracefully": true,
+      "massive_query_handled_gracefully": true
+    }
+  }
+}

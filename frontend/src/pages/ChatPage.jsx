@@ -1,15 +1,20 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { AuthContext } from '../App';
 import client from '../api/client';
+import { useNavigate } from 'react-router-dom';
 
 export default function ChatPage() {
-  const { logout } = useContext(AuthContext);
+  const { logout, role } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [conversations, setConversations] = useState([]);
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(false);
-  const [expandedExcerptId, setExpandedExcerptId] = useState(null);
+  const [selectedLanguage, setSelectedLanguage] = useState(''); // '' means Auto-detect
+  const [expandedSourceId, setExpandedSourceId] = useState(null);
+  const [feedbackDialogMsgId, setFeedbackDialogMsgId] = useState(null);
+  const [feedbackComment, setFeedbackComment] = useState('');
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -51,23 +56,41 @@ export default function ChatPage() {
     setMessages([]);
   };
 
-  const handleSend = async () => {
-    if (!inputValue.trim()) return;
-    const currentInput = inputValue;
+  const handleDeleteConversation = async (e, convId) => {
+    e.stopPropagation();
+    try {
+      await client.delete(`/conversations/${convId}`);
+      if (selectedConversationId === convId) {
+        setSelectedConversationId(null);
+        setMessages([]);
+      }
+      fetchConversations();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSend = async (queryText) => {
+    const textToSend = queryText || inputValue;
+    if (!textToSend || !textToSend.trim()) return;
+    
     setInputValue('');
     
     // Optimistic UI for user message
     const tempUserMsg = {
-      id: Date.now(),
+      id: 'temp-' + Date.now(),
       role: 'user',
-      content: currentInput,
+      content: textToSend,
       created_at: new Date().toISOString()
     };
     setMessages(prev => [...prev, tempUserMsg]);
     setLoading(true);
 
     try {
-      const payload = { message: currentInput };
+      const payload = { 
+        message: textToSend,
+        preferred_language: selectedLanguage || undefined
+      };
       if (selectedConversationId) {
         payload.conversation_id = selectedConversationId;
       }
@@ -76,15 +99,21 @@ export default function ChatPage() {
       
       if (!selectedConversationId && res.data.conversation_id) {
         setSelectedConversationId(res.data.conversation_id);
-        fetchConversations(); // refresh list
+        fetchConversations();
       }
       
-      // Update with server response (which might include both user and bot messages, or just bot)
-      // Usually chat endpoints return the bot message or full thread. Let's assume it returns the bot message.
       setMessages(prev => [...prev, res.data]);
     } catch (err) {
       console.error(err);
-      // Optional: add error message to chat
+      setMessages(prev => [
+        ...prev,
+        {
+          id: 'err-' + Date.now(),
+          role: 'assistant',
+          content: 'An error occurred while contacting the server. Please try again.',
+          is_fallback: true
+        }
+      ]);
     } finally {
       setLoading(false);
     }
@@ -97,32 +126,53 @@ export default function ChatPage() {
     }
   };
 
-  const handleFeedback = async (messageId, isPositive) => {
+  const handleFeedback = async (messageId, rating) => {
     try {
-      await client.post('/feedback', { message_id: messageId, is_positive: isPositive });
-      // Update message visually
-      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, feedback: isPositive } : m));
+      await client.post('/feedback', { 
+        message_id: messageId, 
+        rating: rating,
+        comment: feedbackComment || undefined
+      });
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, feedback_rating: rating } : m));
+      setFeedbackDialogMsgId(null);
+      setFeedbackComment('');
     } catch (err) {
       console.error(err);
     }
   };
 
-  const lastBotMessage = messages.filter(m => m.role === 'assistant' || m.role === 'bot').pop();
-  const languageDisplay = lastBotMessage?.language_display || 'ENGLISH';
+  const samplePrompts = [
+    { title: "KALIA Scheme (English)", text: "What are the eligibility criteria and benefits for KALIA Yojana?" },
+    { title: "BSKY Health (Hinglish)", text: "BSKY me kitna cashless treatment milta hai aur kaunse documents chahiye?" },
+    { title: "Madhu Babu Pension (Odia)", text: "ମଧୁ ବାବୁ ପେନସନ ଯୋଜନା ପାଇଁ କଣ ଯୋଗ୍ୟତା ଏବଂ କେତେ ଟଙ୍କା ମିଳେ?" },
+    { title: "Scholarship Scheme (Hindi)", text: "ओडिशा स्टेट स्कॉलरशिप योजना की अंतिम तिथि और पात्रता क्या है?" }
+  ];
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      {/* LEFT RAIL */}
-      <div style={{ width: '240px', background: 'white', borderRight: '1px solid var(--slate-line)', display: 'flex', flexDirection: 'column', position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 10 }}>
-        <div style={{ padding: '16px' }}>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', fontFamily: 'Inter, sans-serif', background: '#f8fafc' }}>
+      
+      {/* SIDEBAR */}
+      <div style={{ width: '280px', background: '#0f172a', color: '#f8fafc', display: 'flex', flexDirection: 'column', borderRight: '1px solid #1e293b' }}>
+        <div style={{ padding: '20px', borderBottom: '1px solid #1e293b' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <span style={{ fontSize: '20px' }}>🏛️</span>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '15px', color: '#ffffff' }}>Odisha Info Desk</div>
+              <div style={{ fontSize: '11px', color: '#94a3b8' }}>Multilingual RAG Assistant</div>
+            </div>
+          </div>
           <button 
             onClick={handleNewConversation}
-            style={{ width: '100%', background: 'var(--ink-indigo)', color: 'white', borderRadius: '4px', padding: '10px', marginBottom: '8px', fontWeight: 500 }}
+            style={{ width: '100%', background: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', padding: '10px 14px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
           >
-            + New Conversation
+            <span>+</span> New Conversation
           </button>
         </div>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
+
+        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 8px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', padding: '8px 12px', letterSpacing: '0.5px' }}>
+            Recent Conversations
+          </div>
           {conversations.map(conv => {
             const isSelected = selectedConversationId === conv.id;
             return (
@@ -130,161 +180,332 @@ export default function ChatPage() {
                 key={conv.id}
                 onClick={() => setSelectedConversationId(conv.id)}
                 style={{
-                  padding: '12px 16px',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
                   cursor: 'pointer',
-                  borderLeft: isSelected ? '3px solid var(--turmeric-gold)' : '3px solid transparent',
-                  background: isSelected ? 'rgba(217, 166, 46, 0.1)' : 'transparent'
+                  marginBottom: '4px',
+                  background: isSelected ? '#1e293b' : 'transparent',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  transition: 'background 0.15s'
                 }}
               >
-                <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '11px', color: 'var(--ink-indigo)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {conv.last_message || 'New Conversation'}
+                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '13px', color: isSelected ? '#ffffff' : '#cbd5e1', flex: 1 }}>
+                  💬 {conv.last_message || 'New Conversation'}
                 </div>
-                {conv.updated_at && (
-                  <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '10px', color: 'var(--slate-line)', marginTop: '4px' }}>
-                    {new Date(conv.updated_at).toLocaleDateString()}
-                  </div>
-                )}
+                <button
+                  onClick={(e) => handleDeleteConversation(e, conv.id)}
+                  style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '14px', padding: '2px 4px' }}
+                  title="Delete conversation"
+                >
+                  ✕
+                </button>
               </div>
             );
           })}
+          {conversations.length === 0 && (
+            <div style={{ padding: '16px 12px', fontSize: '12px', color: '#64748b', textAlign: 'center' }}>
+              No previous chats yet.
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar Footer */}
+        <div style={{ padding: '16px', borderTop: '1px solid #1e293b', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: '#e2e8f0' }}>Role: {role?.toUpperCase()}</div>
+            {role === 'admin' && (
+              <button 
+                onClick={() => navigate('/admin')}
+                style={{ background: 'none', border: 'none', color: '#38bdf8', fontSize: '12px', padding: 0, cursor: 'pointer', textDecoration: 'underline', marginTop: '4px' }}
+              >
+                Go to Admin Portal →
+              </button>
+            )}
+          </div>
+          <button 
+            onClick={logout}
+            style={{ background: '#334155', border: 'none', color: '#f8fafc', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}
+          >
+            Logout
+          </button>
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
-      <div style={{ flex: 1, marginLeft: '240px', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      {/* MAIN CHAT AREA */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         
-        {/* HEADER */}
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', background: 'white', borderBottom: '1px solid var(--slate-line)', position: 'sticky', top: 0, zIndex: 10 }}>
-          <div style={{ fontFamily: 'Fraunces', fontSize: '16px', fontWeight: 600 }}>
-            Institutional Information Desk
+        {/* TOP HEADER */}
+        <header style={{ height: '60px', background: '#ffffff', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontWeight: 700, fontSize: '16px', color: '#0f172a' }}>Official Knowledge Assistant</span>
+            <span style={{ fontSize: '11px', background: '#e0f2fe', color: '#0369a1', padding: '3px 8px', borderRadius: '12px', fontWeight: 600 }}>
+              Grounded & Anti-Hallucination
+            </span>
           </div>
-          <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '11px', border: '1px solid var(--turmeric-gold)', color: 'var(--turmeric-gold)', padding: '2px 8px', borderRadius: '2px', textTransform: 'uppercase' }}>
-            {languageDisplay}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <label style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>Target Language:</label>
+            <select
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '13px', fontWeight: 500, color: '#0f172a' }}
+            >
+              <option value="">⚡ Auto-Detect</option>
+              <option value="en">English</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+              <option value="hi-en">Hinglish (Hindi in Latin)</option>
+              <option value="or">ଓଡ଼ିଆ (Odia)</option>
+            </select>
           </div>
-          <button onClick={logout} style={{ background: 'transparent', color: 'var(--ink-indigo)', fontSize: '14px', fontWeight: 500 }}>
-            Logout
-          </button>
         </header>
 
-        {/* THREAD */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', background: 'var(--mist-paper)' }}>
-          {messages.length === 0 && !loading && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '16px' }}>
-              {['What is the scholarship deadline?', 'छात्रवृत्ति के लिए क्या दस्तावेज चाहिए?', 'Hostel ka last date kya hai?'].map((chip, idx) => (
-                <div 
-                  key={idx}
-                  onClick={() => setInputValue(chip)}
-                  style={{
-                    background: 'white', border: '1px solid var(--slate-line)', borderRadius: '4px', padding: '12px 20px', cursor: 'pointer', fontFamily: 'Inter', fontSize: '14px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-                  }}
-                >
-                  {chip}
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '800px', margin: '0 auto' }}>
-            {messages.map((msg, idx) => {
-              const isUser = msg.role === 'user';
-              if (isUser) {
-                return (
-                  <div key={msg.id || idx} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <div style={{ background: 'white', borderLeft: '3px solid var(--ink-indigo)', padding: '14px 18px', maxWidth: '65%', borderRadius: '4px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                      <div style={{ fontSize: '15px', lineHeight: '1.5' }}>{msg.content}</div>
-                      <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '11px', color: 'var(--slate-line)', textAlign: 'right', marginTop: '8px' }}>
-                        {new Date(msg.created_at || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                      </div>
-                    </div>
-                  </div>
-                );
-              } else {
-                const hasSource = msg.sources && msg.sources.length > 0;
-                const isFallback = msg.is_fallback;
-                
-                return (
-                  <div key={msg.id || idx} style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                    <div style={{ background: 'white', borderLeft: isFallback ? '3px solid var(--alert-rust)' : '3px solid var(--turmeric-gold)', padding: '14px 18px', maxWidth: '65%', borderRadius: '4px', position: 'relative', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                      <div style={{ fontSize: '15px', lineHeight: '1.5', marginBottom: '28px' }}>{msg.content}</div>
-                      
-                      {/* Stamp Badge */}
-                      {!isFallback && hasSource ? (
-                        <div 
-                          onClick={() => setExpandedExcerptId(expandedExcerptId === msg.id ? null : msg.id)}
-                          style={{
-                            position: 'absolute', bottom: '8px', right: '8px', display: 'inline-block', border: '1px solid var(--turmeric-gold)', boxShadow: 'inset 0 0 0 2px var(--turmeric-gold)', color: 'var(--turmeric-gold)', fontFamily: 'IBM Plex Mono', fontSize: '9px', textTransform: 'uppercase', padding: '3px 8px', transform: 'rotate(-2deg)', cursor: 'pointer'
-                          }}
-                        >
-                          {msg.sources[0].source} · P.{msg.sources[0].page}
-                        </div>
-                      ) : isFallback ? (
-                        <div style={{
-                          position: 'absolute', bottom: '8px', right: '8px', display: 'inline-block', border: '1px dashed var(--alert-rust)', color: 'var(--alert-rust)', fontFamily: 'IBM Plex Mono', fontSize: '9px', textTransform: 'uppercase', padding: '3px 8px'
-                        }}>
-                          UNVERIFIED — NO SOURCE FOUND
-                        </div>
-                      ) : null}
-
-                      {/* Feedback */}
-                      <div style={{ position: 'absolute', bottom: '8px', left: '18px', display: 'flex', gap: '8px' }}>
-                        <button 
-                          onClick={() => handleFeedback(msg.id, true)} 
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: msg.feedback === true ? 'var(--banyan-green)' : 'var(--slate-line)' }}
-                        >👍</button>
-                        <button 
-                          onClick={() => handleFeedback(msg.id, false)} 
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: msg.feedback === false ? 'var(--alert-rust)' : 'var(--slate-line)' }}
-                        >👎</button>
-                      </div>
-
-                      {expandedExcerptId === msg.id && hasSource && (
-                        <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--slate-line)', fontSize: '12px', color: 'var(--slate-line)', fontStyle: 'italic' }}>
-                          "{msg.sources[0].excerpt}"
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              }
-            })}
+        {/* CHAT MESSAGES SCROLL AREA */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', background: '#f8fafc' }}>
+          <div style={{ maxWidth: '840px', margin: '0 auto' }}>
             
-            {loading && (
-              <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                <div style={{ background: 'white', borderLeft: '3px solid var(--slate-line)', padding: '14px 18px', borderRadius: '4px', color: 'var(--slate-line)', fontFamily: 'IBM Plex Mono', fontSize: '20px', lineHeight: 1 }}>
-                  ···
+            {/* WELCOME / STARTER CHIPS */}
+            {messages.length === 0 && !loading && (
+              <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}>🇮🇳 📜</div>
+                <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#0f172a', margin: '0 0 8px 0' }}>
+                  Ask About Odisha Government Schemes
+                </h2>
+                <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '520px', margin: '0 auto 28px auto' }}>
+                  Ask questions in English, Hindi, Hinglish, or Odia. The assistant answers strictly from official scheme records with citations.
+                </p>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', textAlign: 'left' }}>
+                  {samplePrompts.map((p, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => handleSend(p.text)}
+                      style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.02)', transition: 'all 0.15s' }}
+                      onMouseEnter={(e) => e.currentTarget.style.borderColor = '#2563eb'}
+                      onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
+                    >
+                      <div style={{ fontSize: '11px', fontWeight: 600, color: '#2563eb', textTransform: 'uppercase', marginBottom: '6px' }}>
+                        {p.title}
+                      </div>
+                      <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.4 }}>
+                        "{p.text}"
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
-            <div ref={messagesEndRef} />
+
+            {/* MESSAGE LIST */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {messages.map((msg, idx) => {
+                const isUser = msg.role === 'user';
+                const hasSources = msg.sources && msg.sources.length > 0;
+                const isFallback = msg.is_fallback;
+
+                if (isUser) {
+                  return (
+                    <div key={msg.id || idx} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <div style={{ background: '#1e293b', color: '#ffffff', padding: '14px 18px', borderRadius: '12px 12px 2px 12px', maxWidth: '75%', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
+                        <div style={{ fontSize: '14px', lineHeight: '1.5', whiteSpace: 'pre-wrap' }}>{msg.content}</div>
+                        <div style={{ fontSize: '10px', color: '#94a3b8', textAlign: 'right', marginTop: '6px' }}>
+                          {new Date(msg.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={msg.id || idx} style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                    <div style={{ background: '#ffffff', border: isFallback ? '1px solid #fecaca' : '1px solid #e2e8f0', borderRadius: '12px 12px 12px 2px', padding: '18px', maxWidth: '85%', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                      
+                      {/* Message Meta Header */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                        {msg.language_display && (
+                          <span style={{ fontSize: '10px', background: '#f1f5f9', color: '#475569', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                            {msg.language_display}
+                          </span>
+                        )}
+                        {msg.evidence_level && (
+                          <span style={{ 
+                            fontSize: '10px', 
+                            background: msg.evidence_level === 'HIGH' ? '#dcfce7' : msg.evidence_level === 'MEDIUM' ? '#fef3c7' : '#fee2e2', 
+                            color: msg.evidence_level === 'HIGH' ? '#15803d' : msg.evidence_level === 'MEDIUM' ? '#b45309' : '#b91c1c', 
+                            padding: '2px 6px', 
+                            borderRadius: '4px', 
+                            fontWeight: 600 
+                          }}>
+                            {isFallback ? 'UNVERIFIED / FALLBACK' : `EVIDENCE: ${msg.evidence_level}`}
+                          </span>
+                        )}
+                        {msg.confidence !== undefined && (
+                          <span style={{ fontSize: '10px', background: '#f8fafc', color: '#64748b', border: '1px solid #e2e8f0', padding: '2px 6px', borderRadius: '4px', fontWeight: 600 }}>
+                            CONFIDENCE: {(msg.confidence * 100).toFixed(0)}%
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div style={{ fontSize: '14px', lineHeight: '1.6', color: '#0f172a', whiteSpace: 'pre-wrap' }}>
+                        {msg.content}
+                      </div>
+
+                      {/* Source Citations Drawer */}
+                      {hasSources && (
+                        <div style={{ marginTop: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+                          <div style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.5px' }}>
+                            Verified Source Citations ({msg.sources.length})
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {msg.sources.map((src, sIdx) => {
+                              const isExpanded = expandedSourceId === `${msg.id}_${sIdx}`;
+                              const authBadgeColor = src.authority_level === 'official' ? { bg: '#dcfce7', text: '#15803d' }
+                                : src.authority_level === 'demo' ? { bg: '#f3e8ff', text: '#7e22ce' }
+                                : src.authority_level === 'trusted' ? { bg: '#e0f2fe', text: '#0369a1' }
+                                : { bg: '#ffedd5', text: '#c2410c' };
+
+                              return (
+                                <div key={sIdx} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '8px 12px' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, color: '#1e293b' }}>
+                                      <span>📄 {src.document_title || src.title || src.source}</span>
+                                      <span style={{ fontSize: '9px', background: authBadgeColor.bg, color: authBadgeColor.text, padding: '1px 5px', borderRadius: '3px', fontWeight: 700, textTransform: 'uppercase' }}>
+                                        {src.authority_level || 'OFFICIAL'}
+                                      </span>
+                                      {src.version && (
+                                        <span style={{ fontSize: '9px', background: '#f1f5f9', color: '#475569', padding: '1px 5px', borderRadius: '3px', fontWeight: 600 }}>
+                                          v{src.version}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      {src.source_url && (
+                                        <a 
+                                          href={src.source_url} 
+                                          target="_blank" 
+                                          rel="noreferrer"
+                                          style={{ fontSize: '11px', color: '#0284c7', textDecoration: 'none', fontWeight: 500 }}
+                                        >
+                                          🔗 Link
+                                        </a>
+                                      )}
+                                      <button
+                                        onClick={() => setExpandedSourceId(isExpanded ? null : `${msg.id}_${sIdx}`)}
+                                        style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                                      >
+                                        {isExpanded ? 'Hide Excerpt ▲' : 'View Excerpt ▼'}
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#64748b', marginTop: '3px' }}>
+                                    {src.department} · {src.section || 'General'} · Pg. {src.page}
+                                  </div>
+                                  {isExpanded && (
+                                    <div style={{ marginTop: '8px', fontSize: '12px', color: '#475569', fontStyle: 'italic', background: '#ffffff', padding: '8px', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
+                                      "{src.excerpt}"
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Feedback & Actions */}
+                      <div style={{ marginTop: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button
+                            onClick={() => handleFeedback(msg.id, 'up')}
+                            style={{ background: msg.feedback_rating === 'up' ? '#dcfce7' : '#f1f5f9', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                            title="Helpful"
+                          >
+                            👍 Helpful
+                          </button>
+                          <button
+                            onClick={() => {
+                              setFeedbackDialogMsgId(msg.id);
+                              handleFeedback(msg.id, 'down');
+                            }}
+                            style={{ background: msg.feedback_rating === 'down' ? '#fee2e2' : '#f1f5f9', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
+                            title="Not Helpful"
+                          >
+                            👎 Incorrect / Missing info
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Feedback comment input modal/box */}
+                      {feedbackDialogMsgId === msg.id && (
+                        <div style={{ marginTop: '10px', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '10px', borderRadius: '6px' }}>
+                          <div style={{ fontSize: '12px', color: '#475569', marginBottom: '6px' }}>
+                            Help us improve: What was incorrect or missing in this answer?
+                          </div>
+                          <input
+                            type="text"
+                            value={feedbackComment}
+                            onChange={(e) => setFeedbackComment(e.target.value)}
+                            placeholder="e.g. Missing required document list or incorrect amount"
+                            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #cbd5e1', fontSize: '12px', boxSizing: 'border-box', marginBottom: '8px' }}
+                          />
+                          <button
+                            onClick={() => handleFeedback(msg.id, 'down')}
+                            style={{ background: '#0f172a', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}
+                          >
+                            Submit Feedback
+                          </button>
+                        </div>
+                      )}
+
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Loading Indicator */}
+              {loading && (
+                <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                  <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '14px 20px', color: '#64748b', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ animation: 'spin 1s linear infinite' }}>⏳</span> Retrieving official documents and validating facts...
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
           </div>
         </div>
 
-        {/* COMPOSER */}
-        <div style={{ background: 'white', borderTop: '1px solid var(--slate-line)', padding: '16px' }}>
-          <div style={{ maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {/* INPUT BAR */}
+        <div style={{ background: '#ffffff', borderTop: '1px solid #e2e8f0', padding: '16px 24px' }}>
+          <div style={{ maxWidth: '840px', margin: '0 auto' }}>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
               <textarea
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Message..."
-                style={{ flex: 1, resize: 'none', minHeight: '44px', padding: '12px', border: '1px solid var(--slate-line)', borderRadius: '4px', fontSize: '15px', outline: 'none' }}
+                placeholder="Ask anything in English, Hindi, Hinglish, or Odia..."
+                style={{ flex: 1, resize: 'none', minHeight: '48px', maxHeight: '120px', padding: '12px 16px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
                 rows={1}
               />
               <button
-                onClick={handleSend}
+                onClick={() => handleSend()}
                 disabled={!inputValue.trim() || loading}
-                style={{ background: 'var(--ink-indigo)', color: 'white', borderRadius: '4px', height: '44px', padding: '0 24px', fontWeight: 600, opacity: (!inputValue.trim() || loading) ? 0.7 : 1 }}
+                style={{ background: '#2563eb', color: '#ffffff', border: 'none', borderRadius: '8px', height: '48px', padding: '0 24px', fontWeight: 600, fontSize: '14px', cursor: (!inputValue.trim() || loading) ? 'not-allowed' : 'pointer', opacity: (!inputValue.trim() || loading) ? 0.6 : 1 }}
               >
                 Send
               </button>
             </div>
-            <div style={{ fontFamily: 'IBM Plex Mono', fontSize: '11px', color: 'var(--slate-line)', textAlign: 'left' }}>
-              Ask in any language — English, Hindi, Hinglish, Odia
+            <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px', textAlign: 'center' }}>
+              Supports English, हिन्दी (Devanagari), Hinglish (Latin), and ଓଡ଼ିଆ (Odia) with strict source citations.
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
 }
+

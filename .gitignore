@@ -28,12 +28,19 @@ wheels/
 .installed.cfg
 *.egg
 
+# Database
+*.db
+*.sqlite3
+
 # Vector Store & Local Data
 backend/chroma_data/
 backend/uploads/
 chroma_data/
 uploads/
-*.pdf
+
+# Seed PDFs (keep real ones, ignore test artifacts)
+backend/seed_documents/test_*.pdf
+backend/seed_documents/sample_*.pdf
 
 # Node & Frontend
 frontend/node_modules/
