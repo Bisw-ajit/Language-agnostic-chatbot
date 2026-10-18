@@ -21,6 +21,8 @@ _embedder_load_failed = False
 
 def get_embedder():
     global _cached_embedder, _embedder_load_failed
+    if settings.disable_local_embeddings or settings.embedding_model.lower() in ("none", "disabled", ""):
+        return None
     if _cached_embedder is not None:
         return _cached_embedder
     if _embedder_load_failed:

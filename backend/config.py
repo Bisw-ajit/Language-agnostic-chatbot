@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     # Chroma & Vector Store
     chroma_persist_dir: str = os.path.join(os.path.dirname(__file__), "chroma_data")
     embedding_model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    disable_local_embeddings: bool = False
     
     # Retrieval configuration
     vector_top_k: int = 10
