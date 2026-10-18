@@ -2,10 +2,10 @@ import os
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["ANONYMIZED_TELEMETRY"] = "False"
 from functools import lru_cache
 from typing import List, Dict, Any, Optional
 import chromadb
-from sentence_transformers import SentenceTransformer
 from backend.config import get_settings
 from backend.rag.bm25 import get_bm25_index
 
@@ -26,6 +26,7 @@ def get_embedder():
     if _embedder_load_failed:
         return None
     try:
+        from sentence_transformers import SentenceTransformer
         _cached_embedder = SentenceTransformer(settings.embedding_model)
         return _cached_embedder
     except Exception as e:
