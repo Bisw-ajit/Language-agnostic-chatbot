@@ -1,0 +1,61 @@
+{
+  "latency_metrics": {
+    "sample_size": 30,
+    "cold_run_ms": 33.484,
+    "warm_mean_total_ms": 32.698,
+    "warm_median_total_ms": 32.721,
+    "warm_p50_total_ms": 32.759,
+    "warm_p90_total_ms": 35.611,
+    "warm_p95_total_ms": 38.037,
+    "warm_p99_total_ms": 39.075,
+    "warm_min_total_ms": 27.722,
+    "warm_max_total_ms": 39.075,
+    "stage_breakdown_averages_ms": {
+      "retrieval": 28.112,
+      "rerank": 1.491,
+      "evidence_validation": 1.198
+    }
+  },
+  "concurrency_benchmarks": {
+    "1_users": {
+      "concurrent_workers": 1,
+      "total_requests": 25,
+      "errors": 0,
+      "success_rate": 1.0,
+      "throughput_req_per_sec": 32.22,
+      "p50_latency_ms": 31.015,
+      "p95_latency_ms": 33.238,
+      "p99_latency_ms": 38.111
+    },
+    "5_users": {
+      "concurrent_workers": 5,
+      "total_requests": 25,
+      "errors": 0,
+      "success_rate": 1.0,
+      "throughput_req_per_sec": 31.4,
+      "p50_latency_ms": 156.135,
+      "p95_latency_ms": 189.462,
+      "p99_latency_ms": 202.709
+    },
+    "10_users": {
+      "concurrent_workers": 10,
+      "total_requests": 25,
+      "errors": 0,
+      "success_rate": 1.0,
+      "throughput_req_per_sec": 34.67,
+      "p50_latency_ms": 254.635,
+      "p95_latency_ms": 328.111,
+      "p99_latency_ms": 350.412
+    },
+    "25_users": {
+      "concurrent_workers": 25,
+      "total_requests": 25,
+      "errors": 0,
+      "success_rate": 1.0,
+      "throughput_req_per_sec": 35.9,
+      "p50_latency_ms": 585.187,
+      "p95_latency_ms": 676.287,
+      "p99_latency_ms": 683.926
+    }
+  }
+}

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
@@ -13,10 +13,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
+    now = datetime.now(timezone.utc)
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = now + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+        expire = now + timedelta(minutes=settings.access_token_expire_minutes)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
     return encoded_jwt
@@ -43,7 +44,13 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return user
 
 def require_role(*roles):
+    """
+    RBAC dependency checking user role against allowed roles.
+    Includes super_admin inheritance across administrative privileges.
+    """
     def role_checker(current_user: User = Depends(get_current_user)):
+        if current_user.role == "super_admin":
+            return current_user
         if current_user.role not in roles:
             raise HTTPException(status_code=403, detail="Not enough permissions")
         return current_user

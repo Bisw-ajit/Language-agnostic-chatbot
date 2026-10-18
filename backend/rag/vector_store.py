@@ -61,17 +61,23 @@ def store_chunks(chunks: List[Dict[str, Any]], collection_name: str = "documents
             "source": str(c.get("source", "")),
             "page": int(c.get("page", 1)),
             "section": str(c.get("section", "General")),
+            "subsection": str(c.get("subsection", "")),
             "department": str(c.get("department", "General")),
+            "scheme": str(c.get("scheme", "")),
             "category": str(c.get("category", "Scheme")),
             "language": str(c.get("language", "en")),
             "version": str(c.get("version", "1.0")),
             "source_type": str(c.get("source_type", "official")),
             "authority_level": str(c.get("authority_level", "official")),
             "source_url": str(c.get("source_url", "")),
+            "pdf_url": str(c.get("pdf_url", c.get("source_url", ""))),
+            "content_type": str(c.get("content_type", "text")),
+            "has_tables": bool(c.get("has_tables", False)),
             "publisher": str(c.get("publisher", "")),
             "publication_date": str(c.get("publication_date", "")),
             "last_updated": str(c.get("last_updated", "")),
-            "status": str(c.get("status", "active"))
+            "status": str(c.get("status", "active")),
+            "tenant_id": str(c.get("tenant_id", "default-tenant"))
         }
         for c in chunks
     ]
@@ -151,11 +157,12 @@ def vector_search(
     top_k: int = 10,
     filters: Optional[Dict[str, Any]] = None,
     only_active: bool = True,
+    tenant_id: Optional[str] = None,
     collection_name: str = "documents"
 ) -> List[Dict[str, Any]]:
     """
     Performs cosine similarity vector search over ChromaDB.
-    By default filters for status == 'active'.
+    By default filters for status == 'active' and matches tenant_id when provided.
     Returns ranked candidate document chunks with attached 'vector_score'.
     """
     try:
@@ -167,6 +174,14 @@ def vector_search(
     search_filters = dict(filters) if filters else {}
     if only_active and "status" not in search_filters:
         search_filters["status"] = "active"
+    if tenant_id and "tenant_id" not in search_filters:
+        search_filters["tenant_id"] = tenant_id
+
+    where_clause = None
+    if len(search_filters) == 1:
+        where_clause = search_filters
+    elif len(search_filters) > 1:
+        where_clause = {"$and": [{k: v} for k, v in search_filters.items()]}
 
     if embedder is None:
         # Fallback to BM25 ranked relevance retrieval if neural embedding model is offline
@@ -177,6 +192,8 @@ def vector_search(
                 for hit in bm25_hits:
                     d = dict(hit)
                     if only_active and d.get("status", "active") != "active":
+                        continue
+                    if tenant_id and d.get("tenant_id") and d.get("tenant_id") != tenant_id:
                         continue
                     sim_score = d.get("bm25_score", 0.75)
                     d["vector_score"] = sim_score
@@ -194,7 +211,7 @@ def vector_search(
         results = collection.query(
             query_embeddings=query_embedding,
             n_results=top_k,
-            where=search_filters if search_filters else None,
+            where=where_clause,
             include=["documents", "metadatas", "distances"]
         )
     except Exception as e:
@@ -211,9 +228,15 @@ def vector_search(
 
     for i in range(len(docs)):
         meta = metas[i]
-        # In cosine space, dist = 1 - sim => sim = 1 - dist
+        # Chroma default space is squared L2 distance: dist = 2 - 2*cos(theta) for unit vectors
+        # cos(theta) = 1 - dist / 2.0. If collection specifies cosine space, dist = 1 - cos(theta).
         dist = distances[i]
-        sim_score = max(0.0, min(1.0, 1.0 - dist))
+        space = getattr(collection, "metadata", None)
+        space_type = space.get("hnsw:space", "l2") if isinstance(space, dict) else "l2"
+        if space_type == "cosine":
+            sim_score = max(0.0, min(1.0, 1.0 - dist))
+        else:
+            sim_score = max(0.0, min(1.0, 1.0 - (dist / 2.0)))
         
         doc_dict = dict(meta)
         doc_dict["text"] = docs[i]

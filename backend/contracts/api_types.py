@@ -11,6 +11,19 @@ class LoginResponse(BaseModel):
     token_type: str
     role: str
     user_id: str
+    tenant_id: Optional[str] = "default-tenant"
+    email: Optional[str] = None
+
+class ErrorDetail(BaseModel):
+    code: int
+    message: str
+    request_id: Optional[str] = None
+    details: Optional[object] = None
+
+class StandardErrorResponse(BaseModel):
+    detail: object
+    error: ErrorDetail
+    request_id: Optional[str] = None
 
 class RegisterRequest(BaseModel):
     email: str
@@ -53,7 +66,10 @@ class ChatResponse(BaseModel):
     evidence_level: Optional[str] = "HIGH"
     conflicts: Optional[List[str]] = None
     is_fallback: bool
+    llm_status: Optional[str] = "LLM_SUCCESS"
+    generation_source: Optional[str] = "groq"
     rewritten_query: Optional[str] = None
+    latency_ms: Optional[dict] = None
 
 class FeedbackRequest(BaseModel):
     message_id: str

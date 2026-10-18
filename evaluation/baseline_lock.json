@@ -1,0 +1,17 @@
+{
+  "phase": "PHASE 0: BASELINE LOCK",
+  "timestamp": "2026-09-22 07:23:07 UTC",
+  "tests_passed": 53,
+  "tests_failed": 0,
+  "tests_total": 53,
+  "Recall@5": 1.0,
+  "MRR": 0.9350,
+  "evidence_validation_accuracy": 0.58,
+  "false_rejection_rate": 0.5185,
+  "grounded_answer_rate": 0.4815,
+  "citation_correctness": 1.0,
+  "injection_block_rate": 0.8235,
+  "latency_p50_ms": 1899.85,
+  "latency_p95_ms": 2996.16,
+  "latency_p99_ms": 10229.74
+}

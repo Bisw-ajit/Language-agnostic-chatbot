@@ -1,10 +1,15 @@
 # Environments & Secrets
 .env
+.env.*
 .env.local
+backend/.env
+backend/.env.*
+**/.env
+*.env
 venv/
+.venv/
 env/
 ENV/
-*.env
 
 # Python
 __pycache__/
@@ -37,6 +42,10 @@ backend/chroma_data/
 backend/uploads/
 chroma_data/
 uploads/
+data/raw_pdfs/
+*.log
+.coverage
+htmlcov/
 
 # Seed PDFs (keep real ones, ignore test artifacts)
 backend/seed_documents/test_*.pdf

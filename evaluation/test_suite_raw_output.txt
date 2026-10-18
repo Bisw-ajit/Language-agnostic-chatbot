@@ -1,0 +1,101 @@
+/Users/biswajit/Downloads/CLG PROJECT/Language Agnostic Chatbot/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+============================= test session starts ==============================
+platform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0 -- /Users/biswajit/Downloads/CLG PROJECT/Language Agnostic Chatbot/venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/biswajit/Downloads/CLG PROJECT/Language Agnostic Chatbot
+plugins: anyio-4.12.1, langsmith-0.4.37
+collecting ... collected 53 items
+
+tests/test_extended_suite.py::TestInjectionGuard::test_clean_query_passes PASSED [  1%]
+tests/test_extended_suite.py::TestInjectionGuard::test_empty_query_passes PASSED [  3%]
+tests/test_extended_suite.py::TestInjectionGuard::test_invisible_chars_stripped PASSED [  5%]
+tests/test_extended_suite.py::TestInjectionGuard::test_jailbreak_dan_blocked PASSED [  7%]
+tests/test_extended_suite.py::TestInjectionGuard::test_jailbreak_restrictions_blocked PASSED [  9%]
+tests/test_extended_suite.py::TestInjectionGuard::test_long_query_truncated PASSED [ 11%]
+tests/test_extended_suite.py::TestInjectionGuard::test_normal_hindi_query_passes PASSED [ 13%]
+tests/test_extended_suite.py::TestInjectionGuard::test_role_override_blocked PASSED [ 15%]
+tests/test_extended_suite.py::TestInjectionGuard::test_system_prompt_exfil_blocked PASSED [ 16%]
+tests/test_extended_suite.py::TestInjectionGuard::test_template_boundary_blocked PASSED [ 18%]
+tests/test_extended_suite.py::TestHealthEndpoints::test_health_has_version PASSED [ 20%]
+tests/test_extended_suite.py::TestHealthEndpoints::test_health_returns_200 PASSED [ 22%]
+tests/test_extended_suite.py::TestHealthEndpoints::test_liveness_returns_200 PASSED [ 24%]
+tests/test_extended_suite.py::TestHealthEndpoints::test_readiness_returns_200_with_db_ok PASSED [ 26%]
+tests/test_extended_suite.py::TestHealthEndpoints::test_request_id_header_present PASSED [ 28%]
+tests/test_extended_suite.py::TestHealthEndpoints::test_response_time_header_present PASSED [ 30%]
+tests/test_extended_suite.py::TestTenantIsolation::test_admin_analytics_returns_tenant_id PASSED [ 32%]
+tests/test_extended_suite.py::TestTenantIsolation::test_admin_list_users PASSED [ 33%]
+tests/test_extended_suite.py::TestTenantIsolation::test_admin_metrics_endpoint PASSED [ 35%]
+tests/test_extended_suite.py::TestTenantIsolation::test_conversation_tenant_scoped PASSED [ 37%]
+tests/test_extended_suite.py::TestTenantIsolation::test_student_cannot_access_admin_documents PASSED [ 39%]
+tests/test_extended_suite.py::TestInjectionInChatEndpoint::test_injection_attempt_returns_200_with_blocked_status PASSED [ 41%]
+tests/test_extended_suite.py::TestInjectionInChatEndpoint::test_legitimate_query_not_blocked PASSED [ 43%]
+tests/test_master_engineering_suite.py::TestMasterEngineeringSuite::test_checksum_consistency PASSED [ 45%]
+tests/test_master_engineering_suite.py::TestMasterEngineeringSuite::test_chunk_provenance_retention PASSED [ 47%]
+tests/test_master_engineering_suite.py::TestMasterEngineeringSuite::test_contradiction_detection PASSED [ 49%]
+tests/test_master_engineering_suite.py::TestMasterEngineeringSuite::test_end_to_end_rag_answering PASSED [ 50%]
+tests/test_master_engineering_suite.py::TestMasterEngineeringSuite::test_evidence_validator_levels PASSED [ 52%]
+tests/test_master_engineering_suite.py::TestMasterEngineeringSuite::test_fusion_and_reranker_interface PASSED [ 54%]
+tests/test_master_engineering_suite.py::TestMasterEngineeringSuite::test_language_detection_spectrum PASSED [ 56%]
+tests/test_provenance_and_versioning.py::TestProvenanceAndVersioning::test_archived_document_exclusion PASSED [ 58%]
+tests/test_provenance_and_versioning.py::TestProvenanceAndVersioning::test_checksum_calculation PASSED [ 60%]
+tests/test_provenance_and_versioning.py::TestProvenanceAndVersioning::test_provenance_metadata_attachment PASSED [ 62%]
+tests/test_rag_pipeline.py::test_language_detection_english PASSED       [ 64%]
+tests/test_rag_pipeline.py::test_language_detection_hindi PASSED         [ 66%]
+tests/test_rag_pipeline.py::test_language_detection_hinglish PASSED      [ 67%]
+tests/test_rag_pipeline.py::test_language_detection_odia PASSED          [ 69%]
+tests/test_rag_pipeline.py::test_multilingual_bm25 PASSED                [ 71%]
+tests/test_rag_pipeline.py::test_reciprocal_rank_fusion PASSED           [ 73%]
+tests/test_rag_pipeline.py::test_conversational_query_rewriting PASSED   [ 75%]
+tests/test_rag_pipeline.py::test_evidence_validator_fallback PASSED      [ 77%]
+tests/test_rag_pipeline.py::test_evidence_validator_success PASSED       [ 79%]
+tests/test_security_suite.py::TestSecuritySuite::test_admin_can_provision_admin PASSED [ 81%]
+tests/test_security_suite.py::TestSecuritySuite::test_cors_configuration_not_wildcard_with_credentials PASSED [ 83%]
+tests/test_security_suite.py::TestSecuritySuite::test_expired_jwt_rejected PASSED [ 84%]
+tests/test_security_suite.py::TestSecuritySuite::test_fake_pdf_corrupted_header_rejected PASSED [ 86%]
+tests/test_security_suite.py::TestSecuritySuite::test_invalid_jwt_rejected PASSED [ 88%]
+tests/test_security_suite.py::TestSecuritySuite::test_non_pdf_upload_rejected PASSED [ 90%]
+tests/test_security_suite.py::TestSecuritySuite::test_oversized_upload_rejected PASSED [ 92%]
+tests/test_security_suite.py::TestSecuritySuite::test_public_registration_cannot_create_admin PASSED [ 94%]
+tests/test_security_suite.py::TestSecuritySuite::test_student_accessing_admin_api_blocked PASSED [ 96%]
+tests/test_security_suite.py::TestSecuritySuite::test_student_cannot_provision_admin PASSED [ 98%]
+tests/test_security_suite.py::TestSecuritySuite::test_unauthenticated_admin_api_blocked PASSED [100%]
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:228
+<frozen importlib._bootstrap>:228
+  <frozen importlib._bootstrap>:228: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:228
+<frozen importlib._bootstrap>:228
+  <frozen importlib._bootstrap>:228: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:228
+  <frozen importlib._bootstrap>:228: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+tests/test_extended_suite.py::TestInjectionInChatEndpoint::test_legitimate_query_not_blocked
+  /Users/biswajit/Downloads/CLG PROJECT/Language Agnostic Chatbot/venv/lib/python3.9/site-packages/google/api_core/_python_version_support.py:242: FutureWarning: You are using a non-supported Python version (3.9.6). Google will not post any further updates to google.api_core supporting this Python version. Please upgrade to the latest Python version, or at least Python 3.10, and then update google.api_core.
+    warnings.warn(message, FutureWarning)
+
+tests/test_extended_suite.py::TestInjectionInChatEndpoint::test_legitimate_query_not_blocked
+  /Users/biswajit/Downloads/CLG PROJECT/Language Agnostic Chatbot/venv/lib/python3.9/site-packages/google/auth/__init__.py:54: FutureWarning: You are using a Python version 3.9 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+    warnings.warn(eol_message.format("3.9"), FutureWarning)
+
+tests/test_extended_suite.py::TestInjectionInChatEndpoint::test_legitimate_query_not_blocked
+  /Users/biswajit/Downloads/CLG PROJECT/Language Agnostic Chatbot/venv/lib/python3.9/site-packages/google/oauth2/__init__.py:40: FutureWarning: You are using a Python version 3.9 past its end of life. Google will update google-auth with critical bug fixes on a best-effort basis, but not with any other fixes or features. Please upgrade your Python version, and then update google-auth.
+    warnings.warn(eol_message.format("3.9"), FutureWarning)
+
+tests/test_extended_suite.py::TestInjectionInChatEndpoint::test_legitimate_query_not_blocked
+  /Users/biswajit/Downloads/CLG PROJECT/Language Agnostic Chatbot/backend/rag/llm_provider.py:42: FutureWarning: 
+  
+  All support for the `google.generativeai` package has ended. It will no longer be receiving 
+  updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+  See README for more details:
+  
+  https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+  
+    import google.generativeai as genai
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 53 passed, 9 warnings in 13.96s ========================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

@@ -1,0 +1,35 @@
+{
+  "prompt_injection": {
+    "total_attacks_tested": 17,
+    "attacks_blocked": 17,
+    "attack_block_rate": 1.0,
+    "benign_queries_tested": 10,
+    "false_positives": 0,
+    "false_positive_rate": 0.0
+  },
+  "versioning_and_dedup": {
+    "contradiction_detected_correctly": true,
+    "contradiction_false_alarm_avoided": true,
+    "contradiction_precision": 1.0,
+    "contradiction_recall": 1.0,
+    "duplicate_detection_success": true,
+    "mutated_version_accepted": true
+  },
+  "evidence_validator_guardrails": {
+    "total_queries_evaluated": 100,
+    "in_domain_count": 81,
+    "out_of_domain_count": 19,
+    "true_accepts": 81,
+    "false_rejects": 0,
+    "true_rejects": 12,
+    "false_accepts": 7,
+    "evidence_validation_accuracy": 0.93,
+    "false_acceptance_rate": 0.3684,
+    "false_rejection_rate": 0.0,
+    "citation_coverage": 1.0,
+    "citation_correctness": 0.7654,
+    "grounded_answer_rate": 1.0,
+    "measured_hallucination_rate": 0.3684,
+    "abstention_rate": 0.6316
+  }
+}

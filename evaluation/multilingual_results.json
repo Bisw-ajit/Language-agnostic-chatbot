@@ -1,0 +1,57 @@
+{
+  "by_language": {
+    "en": {
+      "total_queries": 25,
+      "in_domain_queries": 21,
+      "detection_accuracy": 0.8,
+      "detection_correct": 20,
+      "Recall@5": 0.9524,
+      "MRR": 0.9048,
+      "HitRate@5": 0.9524,
+      "evidence_validation_success_rate": 0.8571
+    },
+    "hi": {
+      "total_queries": 25,
+      "in_domain_queries": 20,
+      "detection_accuracy": 0.84,
+      "detection_correct": 21,
+      "Recall@5": 0.6,
+      "MRR": 0.575,
+      "HitRate@5": 0.6,
+      "evidence_validation_success_rate": 0.75
+    },
+    "hi-en": {
+      "total_queries": 25,
+      "in_domain_queries": 20,
+      "detection_accuracy": 0.96,
+      "detection_correct": 24,
+      "Recall@5": 0.75,
+      "MRR": 0.75,
+      "HitRate@5": 0.75,
+      "evidence_validation_success_rate": 0.7
+    },
+    "or": {
+      "total_queries": 25,
+      "in_domain_queries": 20,
+      "detection_accuracy": 0.84,
+      "detection_correct": 21,
+      "Recall@5": 0.0,
+      "MRR": 0.0,
+      "HitRate@5": 0.0,
+      "evidence_validation_success_rate": 0.8
+    }
+  },
+  "cross_language_equivalence": {
+    "groups_evaluated": 14,
+    "mean_document_agreement_iou": 0.1715,
+    "correct_evidence_rate_across_all_languages": 0.5,
+    "all_languages_converged_count": 7
+  },
+  "hinglish_mixed_script": {
+    "total_test_queries": 20,
+    "normalization_success_rate": 1.0,
+    "Recall@5": 0.55,
+    "HitRate@5": 0.55,
+    "MRR": 0.55
+  }
+}

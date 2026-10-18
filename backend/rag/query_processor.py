@@ -10,6 +10,63 @@ FOLLOW_UP_INDICATORS = {
     "ଏହା", "ଏହାର", "ଏହି", "ସେହି", "ଯୋଜନା", "ସେଥିପାଇଁ"
 }
 
+# Cross-lingual scheme name & concept mappings to bridge Odia/Hindi queries to English administrative docs
+MULTILINGUAL_ENTITY_MAP = {
+    # Pathani Samanta Mathematics
+    "ପଠାଣି": "Pathani Samanta Mathematics",
+    "ସାମନ୍ତ": "Pathani Samanta",
+    "ଗଣିତ": "Mathematics",
+    "पठानी": "Pathani Samanta Mathematics",
+    "सामंत": "Pathani Samanta",
+    "गणित": "Mathematics",
+    
+    # KALIA
+    "କାଳିଆ": "KALIA Krushak Assistance",
+    "କାଲିଆ": "KALIA Krushak Assistance",
+    "कालिया": "KALIA Krushak Assistance",
+    
+    # BSKY
+    "ବିଜୁ": "Biju Swasthya Kalyan BSKY",
+    "ସ୍ୱାସ୍ଥ୍ୟ": "Swasthya Health HealthCard",
+    "बीजू": "Biju Swasthya Kalyan BSKY",
+    "स्वास्थ्य": "Swasthya Health HealthCard",
+    
+    # Madhu Babu Pension
+    "ମଧୁ": "Madhu Babu Pension MBPY",
+    "ବାବୁ": "Madhu Babu",
+    "ପେନସନ": "Pension",
+    "मधु": "Madhu Babu Pension MBPY",
+    "बाबू": "Madhu Babu",
+    "पेंशन": "Pension",
+    
+    # Scholarships & Education
+    "ଛାତ୍ରବୃତ୍ତି": "Scholarship",
+    "छात्रवृत्ति": "Scholarship",
+    "ମେଧାବୃତ୍ତି": "Merit Scholarship",
+    "ପୋଷ୍ଟ": "Post Matric",
+    "ମାଟ୍ରିକ": "Matric",
+    "ଇକଲବ୍ୟ": "Eklavya EMRS School",
+    "ଏକଲବ୍ୟ": "Eklavya EMRS School",
+    "ମୋ ସ୍କୁଲ": "Mo School Abhiyan",
+    "କୃଷି": "Krushi Agriculture MKUY",
+    "ଉଦ୍ୟୋଗ": "Udyog Industry",
+    "ମିଶନ ଶକ୍ତି": "Mission Shakti WSHG",
+    "ବନିଶ୍ରୀ": "Banishree Scholarship Special Needs",
+    "ଅବଦାନ": "ABADANA Senior Citizens",
+    
+    # Common Intent terms
+    "ଯୋଗ୍ୟତା": "eligibility criteria",
+    "पात्रता": "eligibility criteria",
+    "ଲାଭ": "benefits financial assistance",
+    "लाभ": "benefits financial assistance",
+    "ସହାୟତା": "financial assistance allowance",
+    "सहायता": "financial assistance allowance",
+    "ଆବେଦନ": "how to apply application procedure",
+    "आवेदन": "how to apply application procedure",
+    "କାଗଜପତ୍ର": "required documents",
+    "दस्तावेज": "required documents"
+}
+
 def process_and_rewrite_query(
     query: str,
     conversation_history: Optional[List[Dict[str, Any]]] = None,
@@ -51,10 +108,23 @@ def process_and_rewrite_query(
                     rewritten_query = f"{normalized_query} for {topic}"
                     is_follow_up = True
 
+    # Cross-lingual semantic bridging: append canonical English names when Odia/Hindi terms are present
+    english_expansions = []
+    for term, eng in MULTILINGUAL_ENTITY_MAP.items():
+        if term in normalized_query:
+            for word in eng.split():
+                if word.lower() not in rewritten_query.lower() and word not in english_expansions:
+                    english_expansions.append(word)
+
+    if english_expansions:
+        search_query = f"{rewritten_query} {' '.join(english_expansions[:6])}"
+    else:
+        search_query = rewritten_query
+
     return {
         "raw_query": query,
         "normalized_query": normalized_query,
-        "search_query": rewritten_query,
+        "search_query": search_query,
         "is_follow_up": is_follow_up,
         "language_info": lang_info
     }

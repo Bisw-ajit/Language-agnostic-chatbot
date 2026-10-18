@@ -1,0 +1,91 @@
+Issue Type,Summary,Description,Assignee,Priority,Status,Story Points,Due Date,Labels,Component
+Story,US-01: User Authentication & Role-Based Access Control (RBAC),"*User Story:* As a user or admin, I want to securely log in with JWT tokens so that I can access role-specific dashboards and endpoints.
+
+*Acceptance Criteria:*
+1. Implement password hashing with bcrypt and JWT token generation.
+2. Provide login/register REST endpoints for Student and Admin roles.
+3. Secure restricted endpoints using FastAPI Depends(get_current_user).",Sreesanth Panda,Highest,Done,5,2026-08-20,"auth,security,fastapi",Backend
+Story,US-02: FastAPI Backend Core Architecture & Health Endpoints,"*User Story:* As a developer, I want a structured FastAPI server with CORS and health-check endpoints so that the frontend can reliably communicate with backend services.
+
+*Acceptance Criteria:*
+1. Modular folder structure with config, routes, services, and models.
+2. Configure CORS middleware for local frontend port (Vite/React).
+3. /api/health endpoint returning database and memory status.",Sreesanth Panda,High,Done,3,2026-08-22,"backend,architecture,api",Backend
+Story,US-03: Document Ingestion & Text Chunking Pipeline,"*User Story:* As an admin, I want to upload official government scheme PDFs and parse them into structured text chunks so that they can be prepared for vectorization.
+
+*Acceptance Criteria:*
+1. Extract text and metadata from PDF files using PyMuPDF / LangChain loaders.
+2. Apply recursive character text splitting with 500-token chunk size and 50-token overlap.
+3. Store document metadata and raw file status in SQLite database.",Sreesanth Panda,Highest,Done,5,2026-08-25,"ingestion,rag,pipeline",Data Pipeline
+Story,US-04: Dense Vector Storage & ChromaDB Indexing,"*User Story:* As a system, I want to generate multilingual vector embeddings from text chunks and store them in ChromaDB so that semantic similarity search can be performed.
+
+*Acceptance Criteria:*
+1. Initialize persistent ChromaDB vector store collection.
+2. Generate dense embeddings using multilingual embedding models.
+3. Store document ID, chunk text, and source page as vector metadata.",Sreesanth Panda,Highest,Done,5,2026-08-27,"chromadb,embeddings,vector-search",Data Pipeline
+Story,US-05: Multi-Language Query Detection (English, Hindi, Hinglish, Odia),"*User Story:* As a citizen, I want the system to automatically detect whether my query is in English, Hindi, Hinglish, or Odia so that queries are routed to the proper language pipeline.
+
+*Acceptance Criteria:*
+1. Implement fast rule-based script detection for Devanagari (Hindi) and Odia scripts.
+2. Classify Latin-script queries as standard English vs Hinglish transliteration.
+3. Return detected language code with confidence score.",J Subham Acharye,High,Done,5,2026-08-28,"multilingual,nlp,language-detection",NLP Core
+Story,US-06: Responsive Chat Interface & Starter Query Cards,"*User Story:* As a citizen, I want a clean, responsive React chat interface with starter query cards across languages so that I can easily ask questions on mobile or desktop.
+
+*Acceptance Criteria:*
+1. Chat window supporting real-time message stream with user & assistant bubbles.
+2. Language selector dropdown and quick starter prompts in 4 languages.
+3. Loading indicators and clean error states during API latency.",Nilesh Gourab Rout,Medium,Done,3,2026-08-29,"frontend,ui,react",Frontend
+Story,US-07: Sparse Retrieval with BM25 Indexing,"*User Story:* As a search engine, I want BM25 keyword indexing across scheme terms, numbers, and acronyms to capture exact lexical matches alongside semantic embeddings.
+
+*Acceptance Criteria:*
+1. Tokenize document chunks with multilingual stopword filtering.
+2. Build in-memory / persistent BM25 index on ingestion.
+3. Return top-K BM25 scored document IDs for incoming search queries.",J Subham Acharye,High,Done,5,2026-08-29,"bm25,sparse-retrieval,search",Search & Retrieval
+Story,US-08: Reciprocal Rank Fusion (RRF) Hybrid Retriever,"*User Story:* As a retrieval pipeline, I want to combine dense vector rankings and sparse BM25 scores using RRF so that the system achieves high recall across mixed queries.
+
+*Acceptance Criteria:*
+1. Implement RRF algorithm with configurable smoothing parameter (k=60).
+2. Merge vector candidates and BM25 candidates into a unified ranked list.
+3. Deduplicate overlapping chunks and return top ranked candidates.",J Subham Acharye,Highest,Done,5,2026-08-30,"rrf,hybrid-retrieval,rag",Search & Retrieval
+Story,US-09: LLM Prompt Orchestration & Zero-Hallucination Guardrails,"*User Story:* As a citizen, I want responses strictly generated from retrieved document context with fallback messages for out-of-domain queries so that no false information is given.
+
+*Acceptance Criteria:*
+1. Design system prompt enforcing strict grounded answers only from context.
+2. Trigger standard polite fallback response when similarity threshold < 0.65.
+3. Integrate Gemini LLM API client with temperature = 0.1 for high precision.",J Subham Acharye,High,In Progress,5,2026-09-20,"llm,gemini,guardrails",NLP Core
+Story,US-10: Admin Document Management & Metadata Tagging UI,"*User Story:* As an administrator, I want a web interface to view all ingested documents, verify status/checksum, and delete outdated schemes.
+
+*Acceptance Criteria:*
+1. Admin table showing uploaded files, upload date, status, and chunk count.
+2. PDF upload drag-and-drop zone with instant ingestion trigger.
+3. Delete button to remove document chunks from SQLite and ChromaDB.",Nilesh Gourab Rout,Medium,Done,3,2026-08-30,"admin,ui,react",Frontend
+Story,US-11: Cross-Encoder Semantic Reranker Integration,"*User Story:* As a retrieval pipeline, I want a cross-encoder reranking step to re-score top candidate chunks and optimize Mean Reciprocal Rank (MRR).
+
+*Acceptance Criteria:*
+1. Pass query-chunk pairs through lightweight cross-encoder model.
+2. Re-order top 10 candidates to select top 3 most relevant context passages.
+3. Benchmark latency overhead to ensure under 50ms per query.",J Subham Acharye,High,To Do,5,2026-10-10,"reranker,cross-encoder,optimization",Search & Retrieval
+Story,US-12: Source Grounding & Interactive Citation References,"*User Story:* As a user, I want clickable citation badges attached to each answer section showing the exact page and source scheme document.
+
+*Acceptance Criteria:*
+1. Extract source document title and page number from chunk metadata.
+2. Render interactive badge chips in chat bubbles.
+3. Clicking badge opens drawer or preview modal showing the cited document excerpt.",Nilesh Gourab Rout,High,In Progress,3,2026-09-25,"citations,grounding,ui",Frontend
+Story,US-13: Unanswered Query Analytics & Admin Feedback Loop,"*User Story:* As an admin, I want to review unanswered or low-confidence user queries so that knowledge gaps in documents can be identified and uploaded.
+
+*Acceptance Criteria:*
+1. Log fallback queries with timestamp and detected language to database.
+2. Admin analytics page displaying top missing query topics and search volume.
+3. One-click button to tag a missing query to an uploaded scheme document.",Sreesanth Panda,Medium,In Progress,3,2026-10-15,"analytics,admin,feedback",Backend
+Story,US-14: Comprehensive Benchmark Evaluation Suite,"*User Story:* As a developer, I want an automated evaluation test suite with adversarial test cases to measure multilingual recall and end-to-end latency.
+
+*Acceptance Criteria:*
+1. Create test dataset of 100 question-answer pairs across English, Hindi, Hinglish, Odia.
+2. Compute Recall@5, MRR, and response latency across all 4 retrieval strategies.
+3. Generate automated markdown evaluation benchmark report.",Nilesh Gourab Rout,Medium,In Progress,5,2026-10-20,"testing,evaluation,benchmarks",Testing & QA
+Story,US-15: Docker Containerization & Production Deployment Config,"*User Story:* As a DevOps engineer, I want Docker Compose multi-container setup (frontend + backend + chromadb) for one-click deployment.
+
+*Acceptance Criteria:*
+1. Write multi-stage Dockerfile for FastAPI backend and Vite React frontend.
+2. Create docker-compose.yml with volume persistence for ChromaDB and SQLite.
+3. Configure environment variables and healthcheck restart policies.",Nilesh Gourab Rout,Low,To Do,3,2026-10-28,"devops,docker,deployment",DevOps

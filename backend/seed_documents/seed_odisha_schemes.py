@@ -24,12 +24,26 @@ def build_pdf(filename: str, title: str, sections: list) -> str:
     pdf.add_page()
     pdf.set_font("Helvetica", size=11)
     
-    for sec_title, content in sections:
+    for item in sections:
+        if len(item) == 2:
+            sec_title, content = item
+            table_data = None
+        else:
+            sec_title, content, table_data = item
+            
         pdf.set_font("Helvetica", 'B', 12)
         pdf.cell(0, 8, sec_title, 0, new_x="LMARGIN", new_y="NEXT")
         pdf.set_font("Helvetica", size=10)
         for line in content.strip().split('\n'):
             pdf.cell(0, 6, line.strip(), 0, new_x="LMARGIN", new_y="NEXT")
+        
+        if table_data:
+            pdf.ln(2)
+            with pdf.table() as table:
+                for row_data in table_data:
+                    row = table.row()
+                    for cell_data in row_data:
+                        row.cell(str(cell_data))
         pdf.ln(4)
         
     out_dir = os.path.dirname(__file__)
@@ -50,7 +64,14 @@ def seed_all_schemes():
          "- Small and Marginal Farmers receive Rs 10000 per family per year provided in two installments for Kharif and Rabi seasons.\n"
          "- Landless Agricultural Households receive Rs 12500 for livelihood activities such as goat rearing, poultry, duckery, and bee keeping.\n"
          "- Vulnerable Cultivators receive financial aid of Rs 10000 per family for sustenance.\n"
-         "- Life Insurance cover of Rs 200000 at a nominal premium for all savings bank account holders between 18 to 50 years."),
+         "- Life Insurance cover of Rs 200000 at a nominal premium for all savings bank account holders between 18 to 50 years.",
+         (
+             ("Beneficiary Category", "Financial Assistance", "Installments / Details"),
+             ("Small & Marginal Farmers", "Rs 10,000 per family per year", "2 Installments (Kharif and Rabi)"),
+             ("Landless Agricultural Households", "Rs 12,500 per family", "Livelihood activities"),
+             ("Vulnerable Cultivators", "Rs 10,000 per family", "Annual sustenance assistance"),
+             ("Life Insurance Cover", "Rs 2,00,000 cover", "Nominal premium (18 to 50 years)")
+         )),
         ("3. Eligibility Criteria",
          "- Permanent resident of Odisha.\n"
          "- Small and marginal farmers with landholding up to 2 hectares (5 acres).\n"
@@ -79,7 +100,13 @@ def seed_all_schemes():
         ("2. Hospital Network and Facilities",
          "- Cashless treatment is available across all Odisha Government Hospitals from District Headquarter Hospitals to Medical Colleges.\n"
          "- Cashless treatment is also available in more than 800 empaneled premier private hospitals within and outside Odisha (including AIIMS, Apollo, Fortis, Tata Medical Center).\n"
-         "- Covers 4036 surgical procedures, diagnostic tests, medicines, ICU charges, and post-operative care."),
+         "- Covers 4036 surgical procedures, diagnostic tests, medicines, ICU charges, and post-operative care.",
+         (
+             ("Beneficiary Category", "Annual Health Coverage", "Hospital Network"),
+             ("General Family Members", "Up to Rs 5,00,000 per annum", "All Govt & 800+ Empaneled Hospitals"),
+             ("Women Family Members", "Up to Rs 10,00,000 per annum", "All Govt & 800+ Empaneled Hospitals"),
+             ("Critical & Surgical Care", "4,036 surgical procedures", "Free medicines, ICU & diagnostics")
+         )),
         ("3. Eligibility and Beneficiary Identification",
          "- All holders of BSKY Smart Health Card.\n"
          "- All National Food Security Act (NFSA) and State Food Security Scheme (SFSS) ration card holders.\n"
@@ -105,7 +132,14 @@ def seed_all_schemes():
          "- Beneficiaries aged 60 to 79 years: Rs 500 per month (revised up to Rs 1000 per month).\n"
          "- Beneficiaries aged 80 years and above: Rs 700 to Rs 1200 per month.\n"
          "- Persons with Disabilities (PwD) with 40% to 59% disability: Rs 500 per month.\n"
-         "- Persons with Disabilities (PwD) with 60% or more disability: Rs 700 to Rs 1400 per month."),
+         "- Persons with Disabilities (PwD) with 60% or more disability: Rs 700 to Rs 1400 per month.",
+         (
+             ("Beneficiary Category", "Age / Disability Criteria", "Monthly Pension Amount"),
+             ("Senior Citizens (Old Age)", "Aged 60 to 79 years", "Rs 500 to Rs 1,000 per month"),
+             ("Super Senior Citizens", "Aged 80 years and above", "Rs 700 to Rs 1,200 per month"),
+             ("Persons with Disabilities", "40% to 59% disability", "Rs 500 per month"),
+             ("Severe Disabilities", "60% or more disability", "Rs 700 to Rs 1,400 per month")
+         )),
         ("3. Eligibility Criteria",
          "- Minimum age of 60 years for Old Age Pension.\n"
          "- Permanent resident and domicile of Odisha.\n"
@@ -135,7 +169,14 @@ def seed_all_schemes():
          "- Junior Merit Scholarship: Rs 3000 per year for +2 students.\n"
          "- Senior Merit Scholarship: Rs 5000 per year for +3 (Degree) students.\n"
          "- Technical and Professional Scholarship (B.Tech, MBBS, MBA, MCA): Rs 10000 per year.\n"
-         "- Post-Matric Scholarship for SC/ST/OBC: Covers 100% course fee plus monthly maintenance allowance."),
+         "- Post-Matric Scholarship for SC/ST/OBC: Covers 100% course fee plus monthly maintenance allowance.",
+         (
+             ("Scholarship Scheme", "Eligible Course / Level", "Annual Financial Support"),
+             ("Junior Merit Scholarship", "+2 (Higher Secondary) students", "Rs 3,000 per year"),
+             ("Senior Merit Scholarship", "+3 (Degree / Graduation) students", "Rs 5,000 per year"),
+             ("Technical & Professional", "B.Tech, MBBS, MBA, MCA courses", "Rs 10,000 per year"),
+             ("Post-Matric SC/ST/OBC", "Higher Education after Matric", "100% course fee + allowance")
+         )),
         ("3. Eligibility Criteria and Deadlines",
          "- Minimum 60% aggregate marks in the previous qualifying examination.\n"
          "- Family annual income should not exceed Rs 250000 (Rs 2.5 Lakh) per annum.\n"

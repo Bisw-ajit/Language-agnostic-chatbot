@@ -1,0 +1,114 @@
+{
+  "P4": {
+    "priority": "P4",
+    "department": "ST & SC Development",
+    "status": "completed",
+    "documents": 4,
+    "chunks": 263,
+    "last_updated": "2026-09-23T04:19:32.524711+00:00"
+  },
+  "P5": {
+    "priority": "P5",
+    "department": "School & Mass Education",
+    "status": "completed",
+    "documents": 3,
+    "chunks": 123,
+    "last_updated": "2026-09-23T04:26:11.948082+00:00"
+  },
+  "P6": {
+    "priority": "P6",
+    "department": "Health & Family Welfare / NHM",
+    "status": "pending",
+    "documents": 0,
+    "chunks": 0,
+    "last_updated": null
+  },
+  "P7": {
+    "priority": "P7",
+    "department": "Food Supplies & Consumer Welfare",
+    "status": "pending",
+    "documents": 0,
+    "chunks": 0,
+    "last_updated": null
+  },
+  "P8": {
+    "priority": "P8",
+    "department": "Rural Development / Panchayati Raj",
+    "status": "pending",
+    "documents": 0,
+    "chunks": 0,
+    "last_updated": null
+  },
+  "P9": {
+    "priority": "P9",
+    "department": "MSME / Industries",
+    "status": "pending",
+    "documents": 0,
+    "chunks": 0,
+    "last_updated": null
+  },
+  "P10": {
+    "priority": "P10",
+    "department": "Fisheries / Animal Resources Development",
+    "status": "pending",
+    "documents": 0,
+    "chunks": 0,
+    "last_updated": null
+  },
+  "P11": {
+    "priority": "P11",
+    "department": "Housing & Urban Development",
+    "status": "pending",
+    "documents": 0,
+    "chunks": 0,
+    "last_updated": null
+  },
+  "P12": {
+    "priority": "P12",
+    "department": "Labour & Employees' State Insurance",
+    "status": "pending",
+    "documents": 0,
+    "chunks": 0,
+    "last_updated": null
+  },
+  "P13": {
+    "priority": "P13",
+    "department": "Disaster Management / Environment",
+    "status": "pending",
+    "documents": 0,
+    "chunks": 0,
+    "last_updated": null
+  },
+  "P14": {
+    "priority": "P14",
+    "department": "Other relevant citizen-service departments",
+    "status": "pending",
+    "documents": 0,
+    "chunks": 0,
+    "last_updated": null
+  },
+  "P1": {
+    "priority": "P1",
+    "department": "Agriculture & Farmers' Empowerment",
+    "status": "completed",
+    "documents": 3,
+    "chunks": 544,
+    "last_updated": "2026-10-18T04:50:38.350052+00:00"
+  },
+  "P2": {
+    "priority": "P2",
+    "department": "Social Security & Empowerment of Persons with Disabilities",
+    "status": "completed",
+    "documents": 4,
+    "chunks": 156,
+    "last_updated": "2026-09-22T15:50:48.469157+00:00"
+  },
+  "P3": {
+    "priority": "P3",
+    "department": "Women & Child Development / Mission Shakti",
+    "status": "completed",
+    "documents": 3,
+    "chunks": 116,
+    "last_updated": "2026-09-22T15:51:01.708391+00:00"
+  }
+}
