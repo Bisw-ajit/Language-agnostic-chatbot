@@ -47,6 +47,7 @@ jobs:
           POSTGRES_URL: sqlite:///./test_ci.db
           CHROMA_PERSIST_DIR: ./ci_chroma_data
         run: |
+          python -c "from backend.models.database import create_tables, seed_demo_users; create_tables(); seed_demo_users()"
           pytest --cov=backend --cov-report=term
 
   frontend-build:
