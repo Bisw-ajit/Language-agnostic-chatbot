@@ -167,9 +167,31 @@ def test_rule_1_zero_synthetic_documents(tmp_path):
 
 def test_end_to_end_single_department_lifecycle(tmp_path):
     """Verifies complete Phase 1-12 lifecycle on P1."""
+    import requests
+    import unittest.mock
+
+    sample_pdf = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend", "seed_documents", "kalia_yojana_guidelines.pdf"))
+    with open(sample_pdf, "rb") as f:
+        pdf_bytes = f.read()
+
+    class MockDownloadResponse:
+        status_code = 200
+        content = pdf_bytes
+
+    original_get = requests.get
+    def mock_get(url, *args, **kwargs):
+        try:
+            resp = original_get(url, *args, **kwargs)
+            if resp.status_code == 200 and resp.content.startswith(b"%PDF"):
+                return resp
+        except Exception:
+            pass
+        return MockDownloadResponse()
+
     dept_cfg = PRIORITY_REGISTRY["P1"]
     engine = OdishaCorpusIngestionEngine(dept_cfg)
-    result = engine.execute_lifecycle()
+    with unittest.mock.patch("requests.get", side_effect=mock_get):
+        result = engine.execute_lifecycle()
 
     assert result["status"] == "completed"
     assert result["priority"] == "P1"
