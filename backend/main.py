@@ -68,6 +68,27 @@ async def lifespan(app: FastAPI):
         logger.info("Non-production environment: demo users seeded")
     else:
         logger.info("Production environment: automatic demo user seeding skipped for security")
+
+    # ── Ensure baseline official scheme knowledge base is seeded ──────────────
+    from backend.models.database import DocumentMetadata, SessionLocal
+    db = SessionLocal()
+    try:
+        doc_count = db.query(DocumentMetadata).count()
+    except Exception as e:
+        logger.warning(f"Could not check DocumentMetadata count: {e}")
+        doc_count = 0
+    finally:
+        db.close()
+
+    if doc_count == 0:
+        logger.info("Knowledge base is empty. Running automatic seed of official Odisha schemes...")
+        try:
+            from backend.seed_documents.seed_odisha_schemes import seed_all_schemes
+            seed_all_schemes()
+            logger.info("Automatic seed of official Odisha schemes completed.")
+        except Exception as e:
+            logger.error(f"Error during automatic scheme seeding: {e}", exc_info=True)
+
     sync_bm25_from_chroma()
     logger.info("Startup complete — database tables verified, BM25 index synced")
     yield

@@ -48,12 +48,31 @@ MULTILINGUAL_ENTITY_MAP = {
     "ଇକଲବ୍ୟ": "Eklavya EMRS School",
     "ଏକଲବ୍ୟ": "Eklavya EMRS School",
     "ମୋ ସ୍କୁଲ": "Mo School Abhiyan",
+    # Beneficiary & Financial Terms
+    "ଭୂମିହୀନ": "landless agricultural household livelihood",
+    "भूमिहीन": "landless agricultural household livelihood",
+    "କୃଷକ": "farmer small marginal cultivator",
     "କୃଷି": "Krushi Agriculture MKUY",
-    "ଉଦ୍ୟୋଗ": "Udyog Industry",
-    "ମିଶନ ଶକ୍ତି": "Mission Shakti WSHG",
-    "ବନିଶ୍ରୀ": "Banishree Scholarship Special Needs",
-    "ଅବଦାନ": "ABADANA Senior Citizens",
+    "ଚାଷୀ": "farmer small marginal cultivator",
+    "କିସ୍ତି": "installment installments kharif rabi",
+    "ଟଙ୍କା": "rupees financial assistance amount",
+    "ଜୀବିକା": "livelihood activities sustenance",
     
+    # Healthcare & Welfare
+    "ମାଗଣା": "free cashless healthcare treatment",
+    "ଚିକିତ୍ସା": "treatment medical healthcare",
+    "ଡାକ୍ତରଖାନା": "hospital empanelled",
+    "କାର୍ଡ": "card health card smart card ration card",
+    "କାର୍ଡ଼": "card health card smart card ration card",
+    "ବିଧବା": "widow pension",
+    "ବୃଦ୍ଧ": "old age senior citizen pension",
+    "ଦିବ୍ୟାଙ୍ଗ": "disability PwD disabled pension",
+    "ବିକଳାଙ୍ଗ": "disability PwD disabled pension",
+    
+    # Education
+    "ଛାତ୍ର": "student scholarship merit",
+    "କଲେଜ": "college university higher education",
+
     # Common Intent terms
     "ଯୋଗ୍ୟତା": "eligibility criteria",
     "पात्रता": "eligibility criteria",

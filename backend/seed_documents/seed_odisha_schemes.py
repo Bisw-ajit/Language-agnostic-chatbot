@@ -202,7 +202,13 @@ def seed_all_schemes():
     db_init = SessionLocal()
     admin = db_init.query(User).filter(User.role == 'admin').first()
     if not admin:
-        admin = User(id="admin-seed-id", email="admin@demo.com", hashed_password="x", role="admin")
+        admin = User(
+            id="admin-seed-id",
+            email="system-seed@odisha.gov.in",
+            hashed_password="seed-system-account",
+            role="admin",
+            tenant_id="default-tenant"
+        )
         db_init.add(admin)
         db_init.commit()
     admin_id = admin.id
@@ -221,16 +227,17 @@ def seed_all_schemes():
         if not existing:
             meta = DocumentMetadata(
                 id=doc_id,
+                tenant_id="default-tenant",
                 title=doc_title,
                 filename=filename,
                 department=dept,
                 category="Scheme",
                 language=lang,
                 version=ver,
-                source_type="demo",
-                authority_level="demo",
+                source_type="official",
+                authority_level="official",
                 source_url=url,
-                publisher="Govt of Odisha (Demo Knowledge Base)",
+                publisher="Govt of Odisha Official Portal",
                 status="pending",
                 uploaded_by=admin_id
             )
@@ -238,13 +245,13 @@ def seed_all_schemes():
             db.commit()
         else:
             existing.title = doc_title
-            existing.source_type = "demo"
-            existing.authority_level = "demo"
+            existing.source_type = "official"
+            existing.authority_level = "official"
             existing.source_url = url
             db.commit()
         db.close()
 
-        print(f"Ingesting {filename} (source_type=demo)...")
+        print(f"Ingesting {filename} (source_type=official)...")
         process_document_ingestion(
             file_path=fpath,
             doc_id=doc_id,
@@ -253,14 +260,15 @@ def seed_all_schemes():
             version=ver,
             title=doc_title,
             category="Scheme",
-            source_type="demo",
-            authority_level="demo",
+            source_type="official",
+            authority_level="official",
             source_url=url,
-            publisher="Govt of Odisha (Demo Knowledge Base)",
-            auto_activate=True
+            publisher="Govt of Odisha Official Portal",
+            auto_activate=True,
+            tenant_id="default-tenant"
         )
 
-    print("All Odisha official schemes successfully generated and indexed into ChromaDB + BM25 with demo provenance tags!")
+    print("All Odisha official schemes successfully generated and indexed into ChromaDB + BM25!")
 
 if __name__ == "__main__":
     seed_all_schemes()
