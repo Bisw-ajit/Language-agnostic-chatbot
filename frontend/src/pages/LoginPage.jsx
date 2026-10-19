@@ -117,6 +117,41 @@ export default function LoginPage() {
             {successMsg && (
               <p style={{ color: '#10b981', marginTop: '14px', fontSize: '13px', textAlign: 'center', lineHeight: 1.4 }}>{successMsg}</p>
             )}
+
+            {!isRegistering && (
+              <div style={{ marginTop: '16px', padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px', color: '#64748b' }}>
+                <div style={{ fontWeight: 600, color: '#334155', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Demo Accounts:</span>
+                  <span style={{ fontSize: '11px', color: '#94a3b8' }}>Click to auto-fill</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('student@demo.com');
+                      setPassword('demo123');
+                      setError(null);
+                    }}
+                    style={{ padding: '8px', background: 'white', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '12px', color: '#1e293b', cursor: 'pointer', textAlign: 'left' }}
+                  >
+                    <div style={{ fontWeight: 600 }}>👨‍🎓 Student</div>
+                    <div style={{ fontSize: '10px', color: '#64748b' }}>student@demo.com</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail('admin@demo.com');
+                      setPassword('admin123');
+                      setError(null);
+                    }}
+                    style={{ padding: '8px', background: 'white', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '12px', color: '#1e293b', cursor: 'pointer', textAlign: 'left' }}
+                  >
+                    <div style={{ fontWeight: 600 }}>🛡️ Admin</div>
+                    <div style={{ fontSize: '10px', color: '#64748b' }}>admin@demo.com</div>
+                  </button>
+                </div>
+              </div>
+            )}
           </form>
 
           <div style={{ marginTop: '20px', textAlign: 'center' }}>

@@ -63,11 +63,8 @@ if settings.environment == "production":
 async def lifespan(app: FastAPI):
     logger.info("Starting Language Agnostic Chatbot API", extra={"environment": settings.environment})
     create_tables()
-    if settings.environment != "production":
-        seed_demo_users()
-        logger.info("Non-production environment: demo users seeded")
-    else:
-        logger.info("Production environment: automatic demo user seeding skipped for security")
+    seed_demo_users()
+    logger.info("Default organization and baseline users (student@demo.com, admin@demo.com) seeded/verified")
 
     # ── Ensure baseline official scheme knowledge base is seeded ──────────────
     from backend.models.database import DocumentMetadata, SessionLocal
