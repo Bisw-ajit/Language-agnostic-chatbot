@@ -215,6 +215,13 @@ class GroqProvider(LLMProvider):
                 elif "401" in err_lower or "invalid_api_key" in err_lower or "authentication" in err_lower:
                     status = "LLM_AUTH_ERROR"
                     break
+                elif "model_not_found" in err_lower or "does not exist" in err_lower or "not have access" in err_lower:
+                    if self.model_name != "qwen/qwen3.8-27b":
+                        logger.warning(f"[GroqProvider] Model {self.model_name} unavailable. Switching to 'qwen/qwen3.8-27b'.")
+                        self.model_name = "qwen/qwen3.8-27b"
+                        continue
+                    status = "LLM_PROVIDER_ERROR"
+                    break
                 else:
                     status = "LLM_PROVIDER_ERROR"
 

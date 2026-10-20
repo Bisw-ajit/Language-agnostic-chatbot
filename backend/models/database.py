@@ -157,6 +157,7 @@ def seed_demo_users():
         student = db.query(User).filter(User.email == "student@demo.com").first()
         if not student:
             student = User(
+                id="demo-student-id-001",
                 email="student@demo.com",
                 hashed_password=pwd_context.hash("demo123"),
                 role="student",
@@ -167,6 +168,7 @@ def seed_demo_users():
         admin = db.query(User).filter(User.email == "admin@demo.com").first()
         if not admin:
             admin = User(
+                id="demo-admin-id-001",
                 email="admin@demo.com",
                 hashed_password=pwd_context.hash("admin123"),
                 role="admin",
