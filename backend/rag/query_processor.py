@@ -24,20 +24,28 @@ MULTILINGUAL_ENTITY_MAP = {
     "କାଳିଆ": "KALIA Krushak Assistance",
     "କାଲିଆ": "KALIA Krushak Assistance",
     "कालिया": "KALIA Krushak Assistance",
+    "kalia": "KALIA Krushak Assistance",
     
     # BSKY
     "ବିଜୁ": "Biju Swasthya Kalyan BSKY",
     "ସ୍ୱାସ୍ଥ୍ୟ": "Swasthya Health HealthCard",
+    "ବିଏସକେୱାଇ": "BSKY Biju Swasthya Kalyan cashless healthcare",
     "बीजू": "Biju Swasthya Kalyan BSKY",
     "स्वास्थ्य": "Swasthya Health HealthCard",
+    "बीएसकेवाई": "BSKY Biju Swasthya Kalyan cashless healthcare",
+    "बीएसकेवाय": "BSKY Biju Swasthya Kalyan cashless healthcare",
+    "bsky": "BSKY Biju Swasthya Kalyan cashless healthcare",
     
     # Madhu Babu Pension
     "ମଧୁ": "Madhu Babu Pension MBPY",
     "ବାବୁ": "Madhu Babu",
     "ପେନସନ": "Pension",
+    "ଏମବିପିୱାଇ": "MBPY Madhu Babu Pension Yojana social security",
     "मधु": "Madhu Babu Pension MBPY",
     "बाबू": "Madhu Babu",
     "पेंशन": "Pension",
+    "एमबीपीवाई": "MBPY Madhu Babu Pension Yojana social security",
+    "mbpy": "MBPY Madhu Babu Pension Yojana social security",
     
     # Scholarships & Education
     "ଛାତ୍ରବୃତ୍ତି": "Scholarship",
@@ -60,13 +68,21 @@ MULTILINGUAL_ENTITY_MAP = {
     
     # Healthcare & Welfare
     "ମାଗଣା": "free cashless healthcare treatment",
+    "मुफ्त": "free cashless healthcare treatment",
     "ଚିକିତ୍ସା": "treatment medical healthcare",
+    "इलाज": "treatment medical healthcare",
     "ଡାକ୍ତରଖାନା": "hospital empanelled",
+    "अस्पताल": "hospital empanelled",
     "କାର୍ଡ": "card health card smart card ration card",
     "କାର୍ଡ଼": "card health card smart card ration card",
+    "कार्ड": "card health card smart card ration card",
     "ବିଧବା": "widow pension",
+    "विधवा": "widow pension",
     "ବୃଦ୍ଧ": "old age senior citizen pension",
+    "वृद्ध": "old age senior citizen pension",
+    "बुजुर्ग": "old age senior citizen pension",
     "ଦିବ୍ୟାଙ୍ଗ": "disability PwD disabled pension",
+    "दिव्यांग": "disability PwD disabled pension",
     "ବିକଳାଙ୍ଗ": "disability PwD disabled pension",
     
     # Education

@@ -152,13 +152,16 @@ class GroqProvider(LLMProvider):
     def generate(self, prompt: str, system_prompt: Optional[str] = None) -> LLMGenerationResult:
         now = time.time()
         if now < GroqProvider._rate_limit_until:
-            rem = int(GroqProvider._rate_limit_until - now)
-            return LLMGenerationResult(
-                text="",
-                status="LLM_RATE_LIMIT",
-                model=self.model_name,
-                error_message=f"Groq rate limit cooldown active for {rem}s."
-            )
+            rem = GroqProvider._rate_limit_until - now
+            if rem <= 3.0:
+                time.sleep(rem + 0.1)
+            else:
+                return LLMGenerationResult(
+                    text="",
+                    status="LLM_RATE_LIMIT",
+                    model=self.model_name,
+                    error_message=f"Groq rate limit cooldown active for {int(rem)}s."
+                )
 
         self._init_client()
         if not self.api_key or not self._client:
@@ -209,8 +212,12 @@ class GroqProvider(LLMProvider):
                     status = "LLM_TIMEOUT"
                 elif "429" in err_lower or "rate_limit_exceeded" in err_lower or "quota" in err_lower:
                     status = "LLM_RATE_LIMIT"
-                    GroqProvider._rate_limit_until = time.time() + 60.0
-                    logger.warning("[GroqProvider] Rate limit reached. Cooldown initiated for 60s.")
+                    if attempt < max_attempts:
+                        logger.warning(f"[GroqProvider] Rate limit hit on attempt {attempt}. Retrying after 2s backoff...")
+                        time.sleep(2.0)
+                        continue
+                    GroqProvider._rate_limit_until = time.time() + 8.0
+                    logger.warning("[GroqProvider] Rate limit reached. Brief cooldown initiated for 8s.")
                     break
                 elif "401" in err_lower or "invalid_api_key" in err_lower or "authentication" in err_lower:
                     status = "LLM_AUTH_ERROR"
