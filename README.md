@@ -14,19 +14,29 @@ Smart India Hackathon (SIH ID: SIH25104)
 
 ## Project Demo and Verified Links
 
-- Source Repository: [GitHub Repository](https://github.com/Bisw-ajit/Language-agnostic-chatbot)
-- Video Demonstration: [Google Drive Demonstration Video](https://drive.google.com/file/d/1sBIl3k0lRRZ6DWc3lZObGqq0RJh2MVBC/view?usp=sharing)
-- Live Backend Service: [Render Hosted Backend](https://language-agnostic-chatbot-backend.onrender.com)
-- Interactive API Documentation: [Swagger UI (`/docs`)](https://language-agnostic-chatbot-backend.onrender.com/docs) | [ReDoc (`/redoc`)](https://language-agnostic-chatbot-backend.onrender.com/redoc)
+- **Source Repository**: [GitHub Repository](https://github.com/Bisw-ajit/Language-agnostic-chatbot)
+- **Live Frontend Application**: [Render Hosted Frontend](https://language-agnostic-chatbot-frontend.onrender.com)
+- **Live Backend API**: [Render Hosted Backend](https://language-agnostic-chatbot-backend.onrender.com)
+- **Interactive API Documentation**: [Swagger UI (`/docs`)](https://language-agnostic-chatbot-backend.onrender.com/docs) | [ReDoc (`/redoc`)](https://language-agnostic-chatbot-backend.onrender.com/redoc)
+- **Video Demonstration**: [Google Drive Demonstration Video](https://drive.google.com/file/d/1sBIl3k0lRRZ6DWc3lZObGqq0RJh2MVBC/view?usp=sharing)
+- **College Major Project & Viva Defense Guide**: [Academic Viva & Evaluation Guide](docs/COLLEGE_MAJOR_PROJECT_VIVA_GUIDE.md)
 
-> **Deployment Note**: The Render deployment URL hosts the backend REST and Server-Sent Events (SSE) streaming API. It does not serve the client web application. To run the frontend user interface, follow the local development instructions below or deploy the React client to a static hosting provider using the included `render.yaml` specification.
+### Demo Login Credentials
+
+The live deployment comes pre-seeded with baseline citizen and administrative accounts:
+
+| Role | Email | Password | Access Capabilities |
+| :--- | :--- | :--- | :--- |
+| **Student / Citizen** | `student@demo.com` | `demo123` | Multilingual Scheme Search, Chat Interface & Conversation History |
+| **Administrator** | `admin@demo.com` | `admin123` | Document Ingestion Portal, PDF Uploads & Verification Analytics |
 
 ---
 
 ## Production Audit and Engineering Deliverables
 
-The codebase underwent a complete production-readiness audit prior to publication. Detailed technical reports are maintained in `docs/audit/`:
+The codebase underwent a complete production-readiness audit prior to publication. Detailed technical reports are maintained in `docs/` and `docs/audit/`:
 
+- [College Major Project Viva & Defense Guide](docs/COLLEGE_MAJOR_PROJECT_VIVA_GUIDE.md): 6-step examiner demo script, top 15 viva questions with model answers, mathematical formulations, and evaluation rubrics.
 - [Repository Audit Report](docs/audit/REPOSITORY_AUDIT.md): Complete module inventory, dependency audit, cleanup verification, and seed asset tracking.
 - [Security Audit Report](docs/audit/SECURITY_AUDIT.md): Static analysis findings (Bandit), dependency vulnerability scans (pip-audit), dual-view prompt injection defenses, and RBAC matrix.
 - [API Audit and Endpoint Inventory](docs/audit/API_AUDIT.md): Specification for 27 endpoints, request/response models, SSE streaming contracts, and error handling conventions.
@@ -153,8 +163,8 @@ Citizens / Administrators (Web Browser)
 |---|---|---|---|
 | **Backend Framework** | FastAPI | 0.128.x | High-performance asynchronous API framework with native OpenAPI schema generation |
 | **ASGI Server** | Uvicorn | 0.34.x | Standard ASGI web server supporting async I/O and worker concurrency |
-| **Primary LLM** | Groq API | `llama-3.3-70b-versatile` | Ultra-low inference latency for production conversational queries |
-| **Fallback LLM** | Google Gemini API | `gemini-3.1-flash-lite` | Highly cost-effective secondary provider with large context handling |
+| **Primary LLM** | Groq API | `qwen/qwen3.8-27b` | Ultra-low inference latency for grounded multilingual conversational synthesis |
+| **Fallback LLM** | Groq / Gemini API | `llama-3.3-70b-versatile` / `gemini-3.1-flash-lite` | Resilient automatic secondary providers with model fallback and 429 backoff |
 | **Dense Embeddings** | SentenceTransformers | `paraphrase-multilingual-MiniLM-L12-v2` | Multilingual support across 50+ languages with 384-dimensional dense vectors |
 | **Vector Database** | ChromaDB | 1.5.x | Embedded vector store supporting persistent HNSW indexing and metadata filtering |
 | **Lexical Search** | Custom BM25 | Okapi BM25 | In-memory sparse inverted index for exact scheme acronyms and numeric thresholds |
