@@ -19,7 +19,6 @@ Smart India Hackathon (SIH ID: SIH25104)
 - **Live Backend API**: [Render Hosted Backend](https://language-agnostic-chatbot-backend.onrender.com)
 - **Interactive API Documentation**: [Swagger UI (`/docs`)](https://language-agnostic-chatbot-backend.onrender.com/docs) | [ReDoc (`/redoc`)](https://language-agnostic-chatbot-backend.onrender.com/redoc)
 - **Video Demonstration**: [Google Drive Demonstration Video](https://drive.google.com/file/d/1sBIl3k0lRRZ6DWc3lZObGqq0RJh2MVBC/view?usp=sharing)
-- **College Major Project & Viva Defense Guide**: [Academic Viva & Evaluation Guide](docs/COLLEGE_MAJOR_PROJECT_VIVA_GUIDE.md)
 
 ### Demo Login Credentials
 
@@ -34,9 +33,8 @@ The live deployment comes pre-seeded with baseline citizen and administrative ac
 
 ## Production Audit and Engineering Deliverables
 
-The codebase underwent a complete production-readiness audit prior to publication. Detailed technical reports are maintained in `docs/` and `docs/audit/`:
+The codebase underwent a complete production-readiness audit prior to publication. Detailed technical reports are maintained in `docs/audit/`:
 
-- [College Major Project Viva & Defense Guide](docs/COLLEGE_MAJOR_PROJECT_VIVA_GUIDE.md): 6-step examiner demo script, top 15 viva questions with model answers, mathematical formulations, and evaluation rubrics.
 - [Repository Audit Report](docs/audit/REPOSITORY_AUDIT.md): Complete module inventory, dependency audit, cleanup verification, and seed asset tracking.
 - [Security Audit Report](docs/audit/SECURITY_AUDIT.md): Static analysis findings (Bandit), dependency vulnerability scans (pip-audit), dual-view prompt injection defenses, and RBAC matrix.
 - [API Audit and Endpoint Inventory](docs/audit/API_AUDIT.md): Specification for 27 endpoints, request/response models, SSE streaming contracts, and error handling conventions.
